@@ -1,0 +1,174 @@
+<script type="text/javascript" src="/homey.js" data-origin="settings"></script>
+
+<style>
+  .card { margin-bottom: 28px; }
+  .field { margin-bottom: 14px; }
+  .field label { display: block; margin-bottom: 6px; font-weight: 600; }
+  .field input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px;
+    font-family: inherit;
+    font-size: 15px;
+  }
+  .row { display: flex; gap: 10px; align-items: center; }
+  .status { margin: 12px 0 0; min-height: 1.3em; font-size: 14px; }
+  .status.ok { color: #26a65b; }
+  .status.bad { color: #d1344c; }
+  .hint { opacity: 0.7; font-size: 13px; margin: 6px 0 0; }
+  ul.buildings { margin: 8px 0 0; padding-left: 18px; font-size: 14px; }
+</style>
+
+<div class="card">
+  <h2 class="homey-title" data-i18n="settings.keyTitle"></h2>
+  <p class="homey-subtitle" id="keyState"></p>
+
+  <fieldset class="field">
+    <label for="apiKey" data-i18n="settings.keyLabel"></label>
+    <input id="apiKey" type="password" autocomplete="off" spellcheck="false" placeholder="sgv_live_..." />
+    <p class="hint" data-i18n="settings.keyHint"></p>
+  </fieldset>
+
+  <div class="row">
+    <button id="save" class="homey-button-primary" data-i18n="settings.save"></button>
+    <button id="test" class="homey-button-secondary" data-i18n="settings.test"></button>
+  </div>
+
+  <p class="status" id="status"></p>
+  <ul class="buildings" id="buildings"></ul>
+</div>
+
+<div class="card">
+  <h2 class="homey-title" data-i18n="settings.pollTitle"></h2>
+
+  <fieldset class="field">
+    <label for="pollInterval" data-i18n="settings.pollLabel"></label>
+    <input id="pollInterval" type="number" min="30" max="3600" step="10" />
+    <p class="hint" data-i18n="settings.pollHint"></p>
+  </fieldset>
+
+  <button id="savePoll" class="homey-button-primary" data-i18n="settings.save"></button>
+  <p class="status" id="pollStatus"></p>
+</div>
+
+<script type="text/javascript">
+  const POLL_SETTING = 'pollIntervalSeconds';
+  const MIN_POLL = 30;
+
+  const els = {
+    apiKey: document.getElementById('apiKey'),
+    keyState: document.getElementById('keyState'),
+    save: document.getElementById('save'),
+    test: document.getElementById('test'),
+    status: document.getElementById('status'),
+    buildings: document.getElementById('buildings'),
+    pollInterval: document.getElementById('pollInterval'),
+    savePoll: document.getElementById('savePoll'),
+    pollStatus: document.getElementById('pollStatus'),
+  };
+
+  function setStatus(el, message, kind) {
+    el.textContent = message;
+    el.className = 'status' + (kind ? ' ' + kind : '');
+  }
+
+  function callApi(method, path, body) {
+    return new Promise((resolve, reject) => {
+      Homey.api(method, path, body || null, (err, result) => {
+        if (err) return reject(err);
+        resolve(result);
+      });
+    });
+  }
+
+  async function refreshKeyState() {
+    const { hasKey } = await callApi('GET', '/status');
+    // The stored key is never sent back to the page - only whether one exists.
+    els.keyState.textContent = hasKey
+      ? Homey.__('settings.keySet')
+      : Homey.__('settings.keyMissing');
+  }
+
+  async function saveKey() {
+    const value = els.apiKey.value.trim();
+    if (!value) {
+      setStatus(els.status, Homey.__('settings.errors.empty'), 'bad');
+      return;
+    }
+
+    els.save.disabled = true;
+    try {
+      await callApi('POST', '/key', { apiKey: value });
+      els.apiKey.value = '';
+      await refreshKeyState();
+      // Saving alone proves nothing, so verify straight away.
+      await testConnection();
+    } catch (err) {
+      setStatus(els.status, err.message || String(err), 'bad');
+    } finally {
+      els.save.disabled = false;
+    }
+  }
+
+  async function testConnection() {
+    els.test.disabled = true;
+    els.buildings.innerHTML = '';
+    setStatus(els.status, Homey.__('settings.testing'), null);
+
+    try {
+      const result = await callApi('POST', '/test');
+
+      if (!result.ok) {
+        setStatus(els.status, Homey.__('settings.errors.' + result.error), 'bad');
+        return;
+      }
+
+      const buildings = result.buildings || [];
+      setStatus(els.status, Homey.__('settings.ok', { count: buildings.length }), 'ok');
+
+      for (const building of buildings) {
+        const li = document.createElement('li');
+        const state = building.available === false
+          ? Homey.__('settings.offline')
+          : building.available === null
+            ? Homey.__('settings.neverSeen')
+            : Homey.__('settings.online');
+        li.textContent = building.name + ' - ' + state;
+        els.buildings.appendChild(li);
+      }
+    } catch (err) {
+      setStatus(els.status, err.message || String(err), 'bad');
+    } finally {
+      els.test.disabled = false;
+    }
+  }
+
+  function loadPollInterval() {
+    Homey.get(POLL_SETTING, (err, value) => {
+      if (err) return;
+      els.pollInterval.value = typeof value === 'number' ? value : 60;
+    });
+  }
+
+  function savePollInterval() {
+    const seconds = Math.max(parseInt(els.pollInterval.value, 10) || 60, MIN_POLL);
+    els.pollInterval.value = seconds;
+    Homey.set(POLL_SETTING, seconds, (err) => {
+      if (err) return setStatus(els.pollStatus, err.message || String(err), 'bad');
+      setStatus(els.pollStatus, Homey.__('settings.saved'), 'ok');
+    });
+  }
+
+  function onHomeyReady(homeyReady) {
+    window.Homey = homeyReady;
+
+    els.save.addEventListener('click', saveKey);
+    els.test.addEventListener('click', testConnection);
+    els.savePoll.addEventListener('click', savePollInterval);
+
+    loadPollInterval();
+    refreshKeyState().catch(() => {});
+
+    Homey.ready();
+  }
+</script>

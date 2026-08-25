@@ -1,0 +1,51 @@
+{
+  "title": {
+    "en": "Set the comfort level to [[preset]]",
+    "da": "Sæt komfortniveauet til [[preset]]"
+  },
+  "titleFormatted": {
+    "en": "Set the comfort level to [[preset]]",
+    "da": "Sæt komfortniveauet til [[preset]]"
+  },
+  "args": [
+    {
+      "name": "device",
+      "type": "device",
+      "filter": "driver_id=room"
+    },
+    {
+      "name": "preset",
+      "type": "dropdown",
+      "values": [
+        {
+          "id": "none",
+          "title": {
+            "en": "Off",
+            "da": "Fra"
+          }
+        },
+        {
+          "id": "low",
+          "title": {
+            "en": "Low",
+            "da": "Lav"
+          }
+        },
+        {
+          "id": "medium",
+          "title": {
+            "en": "Medium",
+            "da": "Mellem"
+          }
+        },
+        {
+          "id": "high",
+          "title": {
+            "en": "High",
+            "da": "Høj"
+          }
+        }
+      ]
+    }
+  ]
+}

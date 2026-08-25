@@ -1,0 +1,6 @@
+{
+  "1.0.0": {
+    "en": "First release. Adds every room as a thermostat, plus a building device for outdoor conditions and gateway status, and Flow cards for heating, comfort levels, boosting and manual power.",
+    "da": "Første udgivelse. Tilføjer hvert rum som en termostat, plus en bygningsenhed med udendørsforhold og gateway-status, og flow-kort til varme, komfortniveauer, boost og manuel effekt."
+  }
+}

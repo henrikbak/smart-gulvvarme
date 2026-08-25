@@ -1,0 +1,4 @@
+{
+  "title": { "en": "The gateway !{{is|is not}} online", "da": "Gatewayen !{{er|er ikke}} online" },
+  "args": [{ "name": "device", "type": "device", "filter": "driver_id=building" }]
+}

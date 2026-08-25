@@ -1,0 +1,14 @@
+{
+  "title": {
+    "en": "The target temperature was changed outside Homey",
+    "da": "Måltemperaturen blev ændret uden for Homey"
+  },
+  "hint": {
+    "en": "Triggers when the setpoint changes in the Smart Gulvvarme app rather than from Homey, so manual overrides are visible to your Flows.",
+    "da": "Udløses når sætpunktet ændres i Smart Gulvvarme-appen frem for fra Homey, så manuelle indgreb bliver synlige for dine Flows."
+  },
+  "args": [{ "name": "device", "type": "device", "filter": "driver_id=room" }],
+  "tokens": [
+    { "name": "temperature", "type": "number", "title": { "en": "Target temperature", "da": "Måltemperatur" } }
+  ]
+}

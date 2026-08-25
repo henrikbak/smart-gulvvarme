@@ -1,0 +1,18 @@
+{
+  "type": "enum",
+  "title": { "en": "Comfort level", "da": "Komfortniveau" },
+  "desc": {
+    "en": "How eagerly the room is heated.",
+    "da": "Hvor ivrigt rummet opvarmes."
+  },
+  "getable": true,
+  "setable": true,
+  "uiComponent": "picker",
+  "insights": false,
+  "values": [
+    { "id": "none",   "title": { "en": "Off",    "da": "Fra" } },
+    { "id": "low",    "title": { "en": "Low",    "da": "Lav" } },
+    { "id": "medium", "title": { "en": "Medium", "da": "Mellem" } },
+    { "id": "high",   "title": { "en": "High",   "da": "Høj" } }
+  ]
+}

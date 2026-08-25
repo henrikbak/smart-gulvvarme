@@ -1,0 +1,140 @@
+{
+  "name": {
+    "en": "Room",
+    "da": "Rum"
+  },
+  "class": "thermostat",
+  "capabilities": [
+    "target_temperature",
+    "measure_temperature",
+    "measure_humidity",
+    "onoff",
+    "is_heating",
+    "heating_power",
+    "preset_mode",
+    "measure_battery",
+    "alarm_battery",
+    "measure_signal_strength",
+    "alarm_connectivity"
+  ],
+  "capabilitiesOptions": {
+    "target_temperature": {
+      "min": 7,
+      "max": 35,
+      "step": 0.5,
+      "decimals": 1
+    },
+    "onoff": {
+      "title": {
+        "en": "Heating enabled",
+        "da": "Varme aktiveret"
+      },
+      "insightsTitleTrue": {
+        "en": "Room turned on",
+        "da": "Rum tændt"
+      },
+      "insightsTitleFalse": {
+        "en": "Room turned off",
+        "da": "Rum slukket"
+      }
+    },
+    "alarm_connectivity": {
+      "title": {
+        "en": "Sensor offline",
+        "da": "Sensor offline"
+      }
+    }
+  },
+  "platforms": [
+    "local"
+  ],
+  "connectivity": [
+    "cloud"
+  ],
+  "images": {
+    "small": "{{driverAssetsPath}}/images/small.png",
+    "large": "{{driverAssetsPath}}/images/large.png",
+    "xlarge": "{{driverAssetsPath}}/images/xlarge.png"
+  },
+  "icon": "{{driverAssetsPath}}/icon.svg",
+  "pair": [
+    {
+      "id": "api_key"
+    },
+    {
+      "id": "list_devices",
+      "template": "list_devices",
+      "navigation": {
+        "next": "add_devices"
+      },
+      "options": {
+        "singular": false
+      }
+    },
+    {
+      "id": "add_devices",
+      "template": "add_devices"
+    }
+  ],
+  "repair": [
+    {
+      "id": "api_key"
+    }
+  ],
+  "settings": [
+    {
+      "type": "group",
+      "label": {
+        "en": "Sensor",
+        "da": "Sensor"
+      },
+      "children": [
+        {
+          "id": "sensor_id",
+          "type": "label",
+          "label": {
+            "en": "Sensor ID",
+            "da": "Sensor-ID"
+          },
+          "value": "",
+          "hint": {
+            "en": "MAC address of the sensor assigned to this room.",
+            "da": "MAC-adressen på den sensor der er tildelt dette rum."
+          }
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "label": {
+        "en": "Connection",
+        "da": "Forbindelse"
+      },
+      "children": [
+        {
+          "id": "building_id",
+          "type": "label",
+          "label": {
+            "en": "Building ID",
+            "da": "Bygnings-ID"
+          },
+          "value": ""
+        },
+        {
+          "id": "room_id",
+          "type": "label",
+          "label": {
+            "en": "Room ID",
+            "da": "Rum-ID"
+          },
+          "value": ""
+        }
+      ]
+    }
+  ],
+  "energy": {
+    "batteries": [
+      "OTHER"
+    ]
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "title": {
+    "en": "The heating power !{{is|is not}} above [[percent]] %",
+    "da": "Varmeeffekten !{{er|er ikke}} over [[percent]] %"
+  },
+  "titleFormatted": {
+    "en": "The heating power !{{is|is not}} above [[percent]] %",
+    "da": "Varmeeffekten !{{er|er ikke}} over [[percent]] %"
+  },
+  "args": [
+    {
+      "name": "device",
+      "type": "device",
+      "filter": "driver_id=room"
+    },
+    {
+      "name": "percent",
+      "type": "range",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "value": 50,
+      "label": " %"
+    }
+  ]
+}

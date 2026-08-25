@@ -1,0 +1,61 @@
+{
+  "id": "dk.smartgulvvarme",
+  "version": "1.0.0",
+  "compatibility": ">=12.9.0",
+  "sdk": 3,
+  "platforms": [
+    "local"
+  ],
+  "name": {
+    "en": "Smart Gulvvarme",
+    "da": "Smart Gulvvarme"
+  },
+  "description": {
+    "en": "Control your underfloor heating room by room, based on the weather forecast.",
+    "da": "Styr din gulvvarme rum for rum, baseret på vejrudsigten."
+  },
+  "category": "climate",
+  "brandColor": "#1F6F52",
+  "tags": {
+    "en": [
+      "underfloor heating",
+      "floor heating",
+      "thermostat",
+      "heating",
+      "climate"
+    ],
+    "da": [
+      "gulvvarme",
+      "termostat",
+      "varme",
+      "klima",
+      "varmestyring"
+    ]
+  },
+  "permissions": [],
+  "images": {
+    "small": "/assets/images/small.png",
+    "large": "/assets/images/large.png",
+    "xlarge": "/assets/images/xlarge.png"
+  },
+  "author": {
+    "name": "Henrik Bak"
+  },
+  "support": "https://www.smart-gulvvarme.dk",
+  "homepage": "https://www.smart-gulvvarme.dk",
+  "source": "https://github.com/henrikbak/smart-gulvvarme",
+  "api": {
+    "getStatus": {
+      "method": "GET",
+      "path": "/status"
+    },
+    "setKey": {
+      "method": "POST",
+      "path": "/key"
+    },
+    "testConnection": {
+      "method": "POST",
+      "path": "/test"
+    }
+  }
+}

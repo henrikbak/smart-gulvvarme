@@ -1,0 +1,27 @@
+{
+  "title": {
+    "en": "Set the target temperature to [[temperature]]",
+    "da": "Sæt måltemperaturen til [[temperature]]"
+  },
+  "titleFormatted": {
+    "en": "Set the target temperature to [[temperature]]",
+    "da": "Sæt måltemperaturen til [[temperature]]"
+  },
+  "args": [
+    {
+      "name": "device",
+      "type": "device",
+      "filter": "driver_id=room"
+    },
+    {
+      "name": "temperature",
+      "type": "range",
+      "min": 7,
+      "max": 35,
+      "step": 0.5,
+      "value": 21,
+      "label": " °C",
+      "labelDecimals": 1
+    }
+  ]
+}

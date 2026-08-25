@@ -1,0 +1,30 @@
+{
+  "title": {
+    "en": "Set the manual power to [[percent]] %",
+    "da": "Sæt den manuelle effekt til [[percent]] %"
+  },
+  "titleFormatted": {
+    "en": "Set the manual power to [[percent]] %",
+    "da": "Sæt den manuelle effekt til [[percent]] %"
+  },
+  "hint": {
+    "en": "Overrides the heating engine and holds the valve open this share of the time.",
+    "da": "Tilsidesætter varmemotoren og holder ventilen åben denne andel af tiden."
+  },
+  "args": [
+    {
+      "name": "device",
+      "type": "device",
+      "filter": "driver_id=room"
+    },
+    {
+      "name": "percent",
+      "type": "range",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "value": 50,
+      "label": " %"
+    }
+  ]
+}

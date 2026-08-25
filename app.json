@@ -1,0 +1,790 @@
+{
+  "_comment": "This file is generated. Please edit .homeycompose/app.json instead.",
+  "id": "dk.smartgulvvarme",
+  "version": "1.0.0",
+  "compatibility": ">=12.9.0",
+  "sdk": 3,
+  "platforms": [
+    "local"
+  ],
+  "name": {
+    "en": "Smart Gulvvarme",
+    "da": "Smart Gulvvarme"
+  },
+  "description": {
+    "en": "Control your underfloor heating room by room, based on the weather forecast.",
+    "da": "Styr din gulvvarme rum for rum, baseret på vejrudsigten."
+  },
+  "category": "climate",
+  "brandColor": "#1F6F52",
+  "tags": {
+    "en": [
+      "underfloor heating",
+      "floor heating",
+      "thermostat",
+      "heating",
+      "climate"
+    ],
+    "da": [
+      "gulvvarme",
+      "termostat",
+      "varme",
+      "klima",
+      "varmestyring"
+    ]
+  },
+  "permissions": [],
+  "images": {
+    "small": "/assets/images/small.png",
+    "large": "/assets/images/large.png",
+    "xlarge": "/assets/images/xlarge.png"
+  },
+  "author": {
+    "name": "Henrik Bak"
+  },
+  "support": "https://www.smart-gulvvarme.dk",
+  "homepage": "https://www.smart-gulvvarme.dk",
+  "source": "https://github.com/henrikbak/smart-gulvvarme",
+  "api": {
+    "getStatus": {
+      "method": "GET",
+      "path": "/status"
+    },
+    "setKey": {
+      "method": "POST",
+      "path": "/key"
+    },
+    "testConnection": {
+      "method": "POST",
+      "path": "/test"
+    }
+  },
+  "flow": {
+    "triggers": [
+      {
+        "title": {
+          "en": "The room started heating",
+          "da": "Rummet begyndte at varme"
+        },
+        "hint": {
+          "en": "Triggers when the room starts calling for heat.",
+          "da": "Udløses når rummet begynder at kalde på varme."
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=room"
+          }
+        ],
+        "id": "heating_started"
+      },
+      {
+        "title": {
+          "en": "The room stopped heating",
+          "da": "Rummet holdt op med at varme"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=room"
+          }
+        ],
+        "id": "heating_stopped"
+      },
+      {
+        "title": {
+          "en": "The comfort level changed",
+          "da": "Komfortniveauet blev ændret"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=room"
+          }
+        ],
+        "tokens": [
+          {
+            "name": "preset",
+            "type": "string",
+            "title": {
+              "en": "Comfort level",
+              "da": "Komfortniveau"
+            }
+          }
+        ],
+        "id": "preset_changed"
+      },
+      {
+        "title": {
+          "en": "The target temperature was changed outside Homey",
+          "da": "Måltemperaturen blev ændret uden for Homey"
+        },
+        "hint": {
+          "en": "Triggers when the setpoint changes in the Smart Gulvvarme app rather than from Homey, so manual overrides are visible to your Flows.",
+          "da": "Udløses når sætpunktet ændres i Smart Gulvvarme-appen frem for fra Homey, så manuelle indgreb bliver synlige for dine Flows."
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=room"
+          }
+        ],
+        "tokens": [
+          {
+            "name": "temperature",
+            "type": "number",
+            "title": {
+              "en": "Target temperature",
+              "da": "Måltemperatur"
+            }
+          }
+        ],
+        "id": "target_changed_externally"
+      }
+    ],
+    "conditions": [
+      {
+        "title": {
+          "en": "The gateway !{{is|is not}} online",
+          "da": "Gatewayen !{{er|er ikke}} online"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=building"
+          }
+        ],
+        "id": "building_online"
+      },
+      {
+        "title": {
+          "en": "The heating power !{{is|is not}} above [[percent]] %",
+          "da": "Varmeeffekten !{{er|er ikke}} over [[percent]] %"
+        },
+        "titleFormatted": {
+          "en": "The heating power !{{is|is not}} above [[percent]] %",
+          "da": "Varmeeffekten !{{er|er ikke}} over [[percent]] %"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=room"
+          },
+          {
+            "name": "percent",
+            "type": "range",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "value": 50,
+            "label": " %"
+          }
+        ],
+        "id": "heating_power_above"
+      },
+      {
+        "title": {
+          "en": "The room !{{is|is not}} heating",
+          "da": "Rummet varmer !{{|ikke}}"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=room"
+          }
+        ],
+        "id": "is_heating"
+      },
+      {
+        "title": {
+          "en": "The comfort level !{{is|is not}} [[preset]]",
+          "da": "Komfortniveauet !{{er|er ikke}} [[preset]]"
+        },
+        "titleFormatted": {
+          "en": "The comfort level !{{is|is not}} [[preset]]",
+          "da": "Komfortniveauet !{{er|er ikke}} [[preset]]"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=room"
+          },
+          {
+            "name": "preset",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "none",
+                "title": {
+                  "en": "Off",
+                  "da": "Fra"
+                }
+              },
+              {
+                "id": "low",
+                "title": {
+                  "en": "Low",
+                  "da": "Lav"
+                }
+              },
+              {
+                "id": "medium",
+                "title": {
+                  "en": "Medium",
+                  "da": "Mellem"
+                }
+              },
+              {
+                "id": "high",
+                "title": {
+                  "en": "High",
+                  "da": "Høj"
+                }
+              }
+            ]
+          }
+        ],
+        "id": "preset_is"
+      }
+    ],
+    "actions": [
+      {
+        "title": {
+          "en": "Boost to [[temperature]] for [[minutes]] minutes",
+          "da": "Boost til [[temperature]] i [[minutes]] minutter"
+        },
+        "titleFormatted": {
+          "en": "Boost to [[temperature]] for [[minutes]] minutes",
+          "da": "Boost til [[temperature]] i [[minutes]] minutter"
+        },
+        "hint": {
+          "en": "Raises the target temperature, then restores the previous setpoint when the time is up.",
+          "da": "Hæver måltemperaturen og gendanner det forrige sætpunkt når tiden er gået."
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=room"
+          },
+          {
+            "name": "temperature",
+            "type": "range",
+            "min": 7,
+            "max": 35,
+            "step": 0.5,
+            "value": 23,
+            "label": " °C",
+            "labelDecimals": 1
+          },
+          {
+            "name": "minutes",
+            "type": "number",
+            "min": 1,
+            "max": 1440,
+            "step": 1,
+            "value": 60
+          }
+        ],
+        "id": "boost"
+      },
+      {
+        "title": {
+          "en": "Hand the room back to the heating engine",
+          "da": "Giv rummet tilbage til varmemotoren"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=room"
+          }
+        ],
+        "id": "clear_manual_power"
+      },
+      {
+        "title": {
+          "en": "Refresh all rooms now",
+          "da": "Opdater alle rum nu"
+        },
+        "id": "refresh"
+      },
+      {
+        "title": {
+          "en": "Set the manual power to [[percent]] %",
+          "da": "Sæt den manuelle effekt til [[percent]] %"
+        },
+        "titleFormatted": {
+          "en": "Set the manual power to [[percent]] %",
+          "da": "Sæt den manuelle effekt til [[percent]] %"
+        },
+        "hint": {
+          "en": "Overrides the heating engine and holds the valve open this share of the time.",
+          "da": "Tilsidesætter varmemotoren og holder ventilen åben denne andel af tiden."
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=room"
+          },
+          {
+            "name": "percent",
+            "type": "range",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "value": 50,
+            "label": " %"
+          }
+        ],
+        "id": "set_manual_power"
+      },
+      {
+        "title": {
+          "en": "Set the comfort level to [[preset]]",
+          "da": "Sæt komfortniveauet til [[preset]]"
+        },
+        "titleFormatted": {
+          "en": "Set the comfort level to [[preset]]",
+          "da": "Sæt komfortniveauet til [[preset]]"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=room"
+          },
+          {
+            "name": "preset",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "none",
+                "title": {
+                  "en": "Off",
+                  "da": "Fra"
+                }
+              },
+              {
+                "id": "low",
+                "title": {
+                  "en": "Low",
+                  "da": "Lav"
+                }
+              },
+              {
+                "id": "medium",
+                "title": {
+                  "en": "Medium",
+                  "da": "Mellem"
+                }
+              },
+              {
+                "id": "high",
+                "title": {
+                  "en": "High",
+                  "da": "Høj"
+                }
+              }
+            ]
+          }
+        ],
+        "id": "set_preset"
+      },
+      {
+        "title": {
+          "en": "Set the target temperature to [[temperature]]",
+          "da": "Sæt måltemperaturen til [[temperature]]"
+        },
+        "titleFormatted": {
+          "en": "Set the target temperature to [[temperature]]",
+          "da": "Sæt måltemperaturen til [[temperature]]"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=room"
+          },
+          {
+            "name": "temperature",
+            "type": "range",
+            "min": 7,
+            "max": 35,
+            "step": 0.5,
+            "value": 21,
+            "label": " °C",
+            "labelDecimals": 1
+          }
+        ],
+        "id": "set_target_temperature"
+      }
+    ]
+  },
+  "drivers": [
+    {
+      "name": {
+        "en": "Building",
+        "da": "Bygning"
+      },
+      "class": "sensor",
+      "capabilities": [
+        "alarm_connectivity",
+        "measure_temperature",
+        "measure_wind_strength",
+        "measure_wind_angle",
+        "cloud_coverage"
+      ],
+      "capabilitiesOptions": {
+        "measure_temperature": {
+          "title": {
+            "en": "Outdoor temperature",
+            "da": "Udendørs temperatur"
+          }
+        },
+        "alarm_connectivity": {
+          "title": {
+            "en": "Gateway offline",
+            "da": "Gateway offline"
+          },
+          "insightsTitleTrue": {
+            "en": "Gateway went offline",
+            "da": "Gateway gik offline"
+          },
+          "insightsTitleFalse": {
+            "en": "Gateway came online",
+            "da": "Gateway kom online"
+          }
+        }
+      },
+      "platforms": [
+        "local"
+      ],
+      "connectivity": [
+        "cloud"
+      ],
+      "images": {
+        "small": "/drivers/building/assets/images/small.png",
+        "large": "/drivers/building/assets/images/large.png",
+        "xlarge": "/drivers/building/assets/images/xlarge.png"
+      },
+      "icon": "/drivers/building/assets/icon.svg",
+      "pair": [
+        {
+          "id": "api_key"
+        },
+        {
+          "id": "list_devices",
+          "template": "list_devices",
+          "navigation": {
+            "next": "add_devices"
+          }
+        },
+        {
+          "id": "add_devices",
+          "template": "add_devices"
+        }
+      ],
+      "repair": [
+        {
+          "id": "api_key"
+        }
+      ],
+      "settings": [
+        {
+          "type": "group",
+          "label": {
+            "en": "Status",
+            "da": "Status"
+          },
+          "children": [
+            {
+              "id": "last_seen",
+              "type": "label",
+              "label": {
+                "en": "Last seen",
+                "da": "Sidst set"
+              },
+              "value": "-",
+              "hint": {
+                "en": "Newest heartbeat across the building's gateways.",
+                "da": "Nyeste livstegn på tværs af bygningens gateways."
+              }
+            },
+            {
+              "id": "building_id",
+              "type": "label",
+              "label": {
+                "en": "Building ID",
+                "da": "Bygnings-ID"
+              },
+              "value": ""
+            }
+          ]
+        }
+      ],
+      "id": "building"
+    },
+    {
+      "name": {
+        "en": "Room",
+        "da": "Rum"
+      },
+      "class": "thermostat",
+      "capabilities": [
+        "target_temperature",
+        "measure_temperature",
+        "measure_humidity",
+        "onoff",
+        "is_heating",
+        "heating_power",
+        "preset_mode",
+        "measure_battery",
+        "alarm_battery",
+        "measure_signal_strength",
+        "alarm_connectivity"
+      ],
+      "capabilitiesOptions": {
+        "target_temperature": {
+          "min": 7,
+          "max": 35,
+          "step": 0.5,
+          "decimals": 1
+        },
+        "onoff": {
+          "title": {
+            "en": "Heating enabled",
+            "da": "Varme aktiveret"
+          },
+          "insightsTitleTrue": {
+            "en": "Room turned on",
+            "da": "Rum tændt"
+          },
+          "insightsTitleFalse": {
+            "en": "Room turned off",
+            "da": "Rum slukket"
+          }
+        },
+        "alarm_connectivity": {
+          "title": {
+            "en": "Sensor offline",
+            "da": "Sensor offline"
+          }
+        }
+      },
+      "platforms": [
+        "local"
+      ],
+      "connectivity": [
+        "cloud"
+      ],
+      "images": {
+        "small": "/drivers/room/assets/images/small.png",
+        "large": "/drivers/room/assets/images/large.png",
+        "xlarge": "/drivers/room/assets/images/xlarge.png"
+      },
+      "icon": "/drivers/room/assets/icon.svg",
+      "pair": [
+        {
+          "id": "api_key"
+        },
+        {
+          "id": "list_devices",
+          "template": "list_devices",
+          "navigation": {
+            "next": "add_devices"
+          },
+          "options": {
+            "singular": false
+          }
+        },
+        {
+          "id": "add_devices",
+          "template": "add_devices"
+        }
+      ],
+      "repair": [
+        {
+          "id": "api_key"
+        }
+      ],
+      "settings": [
+        {
+          "type": "group",
+          "label": {
+            "en": "Sensor",
+            "da": "Sensor"
+          },
+          "children": [
+            {
+              "id": "sensor_id",
+              "type": "label",
+              "label": {
+                "en": "Sensor ID",
+                "da": "Sensor-ID"
+              },
+              "value": "",
+              "hint": {
+                "en": "MAC address of the sensor assigned to this room.",
+                "da": "MAC-adressen på den sensor der er tildelt dette rum."
+              }
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "label": {
+            "en": "Connection",
+            "da": "Forbindelse"
+          },
+          "children": [
+            {
+              "id": "building_id",
+              "type": "label",
+              "label": {
+                "en": "Building ID",
+                "da": "Bygnings-ID"
+              },
+              "value": ""
+            },
+            {
+              "id": "room_id",
+              "type": "label",
+              "label": {
+                "en": "Room ID",
+                "da": "Rum-ID"
+              },
+              "value": ""
+            }
+          ]
+        }
+      ],
+      "energy": {
+        "batteries": [
+          "OTHER"
+        ]
+      },
+      "id": "room"
+    }
+  ],
+  "capabilities": {
+    "cloud_coverage": {
+      "type": "number",
+      "title": {
+        "en": "Cloud coverage",
+        "da": "Skydække"
+      },
+      "units": {
+        "en": "%"
+      },
+      "min": 0,
+      "max": 100,
+      "decimals": 0,
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "insights": true
+    },
+    "heating_power": {
+      "type": "number",
+      "title": {
+        "en": "Heating power",
+        "da": "Varmeeffekt"
+      },
+      "desc": {
+        "en": "Share of the time the valve is held open.",
+        "da": "Andelen af tiden ventilen står åben."
+      },
+      "units": {
+        "en": "%"
+      },
+      "min": 0,
+      "max": 100,
+      "decimals": 0,
+      "chartType": "stepLine",
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "insights": true,
+      "icon": "/assets/capabilities/heating_power.svg"
+    },
+    "is_heating": {
+      "type": "boolean",
+      "title": {
+        "en": "Heating",
+        "da": "Varmer"
+      },
+      "desc": {
+        "en": "Whether the room is currently calling for heat.",
+        "da": "Om rummet lige nu kalder på varme."
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "insights": true,
+      "insightsTitleTrue": {
+        "en": "Heating started",
+        "da": "Varme startet"
+      },
+      "insightsTitleFalse": {
+        "en": "Heating stopped",
+        "da": "Varme stoppet"
+      },
+      "icon": "/assets/capabilities/is_heating.svg"
+    },
+    "preset_mode": {
+      "type": "enum",
+      "title": {
+        "en": "Comfort level",
+        "da": "Komfortniveau"
+      },
+      "desc": {
+        "en": "How eagerly the room is heated.",
+        "da": "Hvor ivrigt rummet opvarmes."
+      },
+      "getable": true,
+      "setable": true,
+      "uiComponent": "picker",
+      "insights": false,
+      "values": [
+        {
+          "id": "none",
+          "title": {
+            "en": "Off",
+            "da": "Fra"
+          }
+        },
+        {
+          "id": "low",
+          "title": {
+            "en": "Low",
+            "da": "Lav"
+          }
+        },
+        {
+          "id": "medium",
+          "title": {
+            "en": "Medium",
+            "da": "Mellem"
+          }
+        },
+        {
+          "id": "high",
+          "title": {
+            "en": "High",
+            "da": "Høj"
+          }
+        }
+      ]
+    }
+  }
+}

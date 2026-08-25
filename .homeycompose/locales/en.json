@@ -1,0 +1,51 @@
+{
+  "pair": {
+    "title": "Connect to Smart Gulvvarme",
+    "subtitle": "Enter the API key for your Smart Gulvvarme account.",
+    "keyLabel": "API key",
+    "hint": "The key is stored on your Homey and is never shown again. You can replace it later under the app's settings.",
+    "submit": "Connect",
+    "unnamedRoom": "Room",
+    "noSensor": "no sensor",
+    "errors": {
+      "empty": "Enter an API key.",
+      "invalidKey": "That API key was not accepted. Check that you copied all of it.",
+      "unreachable": "Could not reach Smart Gulvvarme. Check your internet connection and try again."
+    }
+  },
+  "device": {
+    "waiting": "Waiting for the first update…",
+    "noKey": "No API key is configured. Add one under the app's settings.",
+    "authProblem": "The API key is missing or no longer valid. Update it under the app's settings.",
+    "unreachable": "Smart Gulvvarme cannot be reached right now.",
+    "noWriteAccess": "This API key may read but not change anything. Ask for a key with write access.",
+    "gone": "This room is no longer covered by the API key.",
+    "gatewayOffline": "The gateway has not reported since {{since}}.",
+    "gatewayNeverSeen": "No gateway has reported yet.",
+    "noSensor": "No sensor is assigned to this room, so it reports no temperature."
+  },
+  "settings": {
+    "keyTitle": "API key",
+    "keyLabel": "New API key",
+    "keyHint": "Paste a new key to replace the current one. The stored key is never displayed.",
+    "keySet": "An API key is configured.",
+    "keyMissing": "No API key is configured yet.",
+    "save": "Save",
+    "saved": "Saved.",
+    "test": "Test connection",
+    "testing": "Testing…",
+    "ok": "The key works and covers {{count}} building(s).",
+    "online": "online",
+    "offline": "offline",
+    "neverSeen": "never reported",
+    "pollTitle": "Update frequency",
+    "pollLabel": "Seconds between updates",
+    "pollHint": "How often Homey asks Smart Gulvvarme for new readings. Minimum 30 seconds.",
+    "errors": {
+      "empty": "Enter an API key.",
+      "no_key": "No API key is configured yet.",
+      "invalid_key": "That API key was not accepted.",
+      "unreachable": "Could not reach Smart Gulvvarme."
+    }
+  }
+}

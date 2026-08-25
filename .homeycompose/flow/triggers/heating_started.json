@@ -1,0 +1,8 @@
+{
+  "title": { "en": "The room started heating", "da": "Rummet begyndte at varme" },
+  "hint": {
+    "en": "Triggers when the room starts calling for heat.",
+    "da": "Udløses når rummet begynder at kalde på varme."
+  },
+  "args": [{ "name": "device", "type": "device", "filter": "driver_id=room" }]
+}

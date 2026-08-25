@@ -1,0 +1,39 @@
+{
+  "title": {
+    "en": "Boost to [[temperature]] for [[minutes]] minutes",
+    "da": "Boost til [[temperature]] i [[minutes]] minutter"
+  },
+  "titleFormatted": {
+    "en": "Boost to [[temperature]] for [[minutes]] minutes",
+    "da": "Boost til [[temperature]] i [[minutes]] minutter"
+  },
+  "hint": {
+    "en": "Raises the target temperature, then restores the previous setpoint when the time is up.",
+    "da": "Hæver måltemperaturen og gendanner det forrige sætpunkt når tiden er gået."
+  },
+  "args": [
+    {
+      "name": "device",
+      "type": "device",
+      "filter": "driver_id=room"
+    },
+    {
+      "name": "temperature",
+      "type": "range",
+      "min": 7,
+      "max": 35,
+      "step": 0.5,
+      "value": 23,
+      "label": " °C",
+      "labelDecimals": 1
+    },
+    {
+      "name": "minutes",
+      "type": "number",
+      "min": 1,
+      "max": 1440,
+      "step": 1,
+      "value": 60
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "pair": {
+    "title": "Forbind til Smart Gulvvarme",
+    "subtitle": "Indtast API-nøglen til din Smart Gulvvarme-konto.",
+    "keyLabel": "API-nøgle",
+    "hint": "Nøglen gemmes på din Homey og vises ikke igen. Du kan udskifte den senere under appens indstillinger.",
+    "submit": "Forbind",
+    "unnamedRoom": "Rum",
+    "noSensor": "ingen sensor",
+    "errors": {
+      "empty": "Indtast en API-nøgle.",
+      "invalidKey": "API-nøglen blev ikke godkendt. Tjek at du har kopieret det hele.",
+      "unreachable": "Kunne ikke få fat i Smart Gulvvarme. Tjek din internetforbindelse og prøv igen."
+    }
+  },
+  "device": {
+    "waiting": "Venter på første opdatering…",
+    "noKey": "Der er ingen API-nøgle indstillet. Tilføj en under appens indstillinger.",
+    "authProblem": "API-nøglen mangler eller er ikke længere gyldig. Opdater den under appens indstillinger.",
+    "unreachable": "Smart Gulvvarme kan ikke nås lige nu.",
+    "noWriteAccess": "Denne API-nøgle må læse, men ikke ændre noget. Bed om en nøgle med skriveadgang.",
+    "gone": "Dette rum er ikke længere dækket af API-nøglen.",
+    "gatewayOffline": "Gatewayen har ikke rapporteret siden {{since}}.",
+    "gatewayNeverSeen": "Ingen gateway har rapporteret endnu.",
+    "noSensor": "Der er ikke tildelt en sensor til dette rum, så det melder ingen temperatur."
+  },
+  "settings": {
+    "keyTitle": "API-nøgle",
+    "keyLabel": "Ny API-nøgle",
+    "keyHint": "Indsæt en ny nøgle for at erstatte den nuværende. Den gemte nøgle vises aldrig.",
+    "keySet": "Der er indstillet en API-nøgle.",
+    "keyMissing": "Der er endnu ingen API-nøgle indstillet.",
+    "save": "Gem",
+    "saved": "Gemt.",
+    "test": "Test forbindelse",
+    "testing": "Tester…",
+    "ok": "Nøglen virker og dækker {{count}} bygning(er).",
+    "online": "online",
+    "offline": "offline",
+    "neverSeen": "har aldrig rapporteret",
+    "pollTitle": "Opdateringsfrekvens",
+    "pollLabel": "Sekunder mellem opdateringer",
+    "pollHint": "Hvor ofte Homey spørger Smart Gulvvarme om nye aflæsninger. Mindst 30 sekunder.",
+    "errors": {
+      "empty": "Indtast en API-nøgle.",
+      "no_key": "Der er endnu ingen API-nøgle indstillet.",
+      "invalid_key": "API-nøglen blev ikke godkendt.",
+      "unreachable": "Kunne ikke få fat i Smart Gulvvarme."
+    }
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "missing_key":   { "status": 401, "body": { "error": { "code": "unauthenticated",  "message": "Missing API key. Send it in the x-api-key header." } } },
+  "invalid_key":   { "status": 403, "body": { "error": { "code": "permission_denied", "message": "The API key is not valid for this API." } } },
+  "not_found":     { "status": 404, "body": { "error": { "code": "not_found",         "message": "No such building: does-not-exist" } } },
+  "not_writable":  { "status": 400, "body": { "error": { "code": "invalid_argument",  "message": "These fields are not writable: bogus" } } },
+  "out_of_range":  { "status": 400, "body": { "error": { "code": "invalid_argument",  "message": "target_temperature must be between 7 and 35." } } }
+}

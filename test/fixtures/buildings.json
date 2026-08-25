@@ -1,0 +1,21 @@
+[
+  {
+    "id": "1a2b3c4d5e6f7g8h9i0j",
+    "name": "user@example.com",
+    "location": {
+      "lat": 56.1629,
+      "lng": 10.2039
+    },
+    "available": true,
+    "last_seen": "2026-08-25T12:23:24.000Z",
+    "weather": {
+      "updated": "2026-08-24T19:25:03.650Z",
+      "temperature": 17.6,
+      "cloud_coverage": 11,
+      "wind": {
+        "direction": 135,
+        "speed": 10.2
+      }
+    }
+  }
+]

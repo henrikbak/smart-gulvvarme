@@ -1,0 +1,6 @@
+/test/
+/docs/
+/.github/
+tsconfig.json
+*.ts
+!*.d.ts

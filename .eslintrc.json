@@ -1,0 +1,66 @@
+{
+  "extends": "athom/homey-app",
+  "ignorePatterns": [
+    ".homeybuild/",
+    "node_modules/",
+    "lib/api-schema.ts",
+    "app.json"
+  ],
+  "settings": {
+    "import/resolver": {
+      "typescript": {
+        "project": "./tsconfig.json"
+      }
+    }
+  },
+  "rules": {
+    "import/extensions": [
+      "error",
+      "ignorePackages",
+      {
+        "ts": "never"
+      }
+    ],
+    "node/no-missing-import": [
+      "error",
+      {
+        "allowModules": [
+          "homey"
+        ],
+        "tryExtensions": [
+          ".ts",
+          ".js",
+          ".json",
+          ".node"
+        ]
+      }
+    ],
+    "node/no-unpublished-import": [
+      "error",
+      {
+        "allowModules": [
+          "homey"
+        ]
+      }
+    ]
+  },
+  "overrides": [
+    {
+      "files": [
+        "test/**/*.ts"
+      ],
+      "rules": {
+        "@typescript-eslint/no-floating-promises": "off",
+        "no-unused-expressions": "off"
+      }
+    },
+    {
+      "files": [
+        "lib/errors.ts"
+      ],
+      "rules": {
+        "max-classes-per-file": "off"
+      }
+    }
+  ]
+}

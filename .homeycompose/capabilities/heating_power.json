@@ -1,0 +1,18 @@
+{
+  "type": "number",
+  "title": { "en": "Heating power", "da": "Varmeeffekt" },
+  "desc": {
+    "en": "Share of the time the valve is held open.",
+    "da": "Andelen af tiden ventilen står åben."
+  },
+  "units": { "en": "%" },
+  "min": 0,
+  "max": 100,
+  "decimals": 0,
+  "chartType": "stepLine",
+  "getable": true,
+  "setable": false,
+  "uiComponent": "sensor",
+  "insights": true,
+  "icon": "/assets/capabilities/heating_power.svg"
+}

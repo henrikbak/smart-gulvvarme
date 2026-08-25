@@ -1,0 +1,63 @@
+{
+  "name": { "en": "Building", "da": "Bygning" },
+  "class": "sensor",
+  "capabilities": [
+    "alarm_connectivity",
+    "measure_temperature",
+    "measure_wind_strength",
+    "measure_wind_angle",
+    "cloud_coverage"
+  ],
+  "capabilitiesOptions": {
+    "measure_temperature": {
+      "title": { "en": "Outdoor temperature", "da": "Udendørs temperatur" }
+    },
+    "alarm_connectivity": {
+      "title": { "en": "Gateway offline", "da": "Gateway offline" },
+      "insightsTitleTrue": { "en": "Gateway went offline", "da": "Gateway gik offline" },
+      "insightsTitleFalse": { "en": "Gateway came online", "da": "Gateway kom online" }
+    }
+  },
+  "platforms": ["local"],
+  "connectivity": ["cloud"],
+  "images": {
+    "small": "{{driverAssetsPath}}/images/small.png",
+    "large": "{{driverAssetsPath}}/images/large.png",
+    "xlarge": "{{driverAssetsPath}}/images/xlarge.png"
+  },
+  "icon": "{{driverAssetsPath}}/icon.svg",
+  "pair": [
+    { "id": "api_key" },
+    {
+      "id": "list_devices",
+      "template": "list_devices",
+      "navigation": { "next": "add_devices" }
+    },
+    { "id": "add_devices", "template": "add_devices" }
+  ],
+  "repair": [{ "id": "api_key" }],
+  "settings": [
+    {
+      "type": "group",
+      "label": { "en": "Status", "da": "Status" },
+      "children": [
+        {
+          "id": "last_seen",
+          "type": "label",
+          "label": { "en": "Last seen", "da": "Sidst set" },
+          "value": "-",
+          "hint": {
+            "en": "Newest heartbeat across the building's gateways.",
+            "da": "Nyeste livstegn på tværs af bygningens gateways."
+          }
+        },
+        {
+          "id": "building_id",
+          "type": "label",
+          "label": { "en": "Building ID", "da": "Bygnings-ID" },
+          "value": ""
+        }
+      ]
+    }
+  ]
+}

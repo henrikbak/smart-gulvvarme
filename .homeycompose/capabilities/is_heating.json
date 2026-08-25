@@ -1,0 +1,15 @@
+{
+  "type": "boolean",
+  "title": { "en": "Heating", "da": "Varmer" },
+  "desc": {
+    "en": "Whether the room is currently calling for heat.",
+    "da": "Om rummet lige nu kalder på varme."
+  },
+  "getable": true,
+  "setable": false,
+  "uiComponent": "sensor",
+  "insights": true,
+  "insightsTitleTrue": { "en": "Heating started", "da": "Varme startet" },
+  "insightsTitleFalse": { "en": "Heating stopped", "da": "Varme stoppet" },
+  "icon": "/assets/capabilities/is_heating.svg"
+}
