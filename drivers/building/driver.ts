@@ -34,6 +34,8 @@ module.exports = class BuildingDriver extends Homey.Driver {
 
   private registerKeyHandlers(session: Homey.Driver.PairSession, mode: 'pair' | 'repair'): void {
     session.setHandler('pair_mode', async () => mode);
+
+    // Lets the view skip straight past itself when a working key is already set.
     session.setHandler('has_key', async () => this.app.hasApiKey());
 
     session.setHandler('validate_key', async (apiKey: unknown): Promise<KeyResult> => {

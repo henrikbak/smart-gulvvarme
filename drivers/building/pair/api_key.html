@@ -1,5 +1,3 @@
-<script type="text/javascript" src="/homey.js" data-origin="pair"></script>
-
 <style>
   .field { margin: 0 0 12px; }
   .field label { display: block; margin-bottom: 6px; font-weight: 600; }
@@ -84,7 +82,7 @@
   Homey.ready().then(async () => {
     mode = await Homey.emit('pair_mode');
 
-    // A key that already works should not be re-typed just to add another room.
+    // A key that already works should not be re-typed just to add another building.
     if (mode === 'pair' && (await Homey.emit('has_key'))) {
       Homey.showView('list_devices');
       return;
