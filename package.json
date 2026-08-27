@@ -2,6 +2,8 @@
   "name": "dk.smartgulvvarme",
   "version": "1.0.0",
   "private": true,
+  "license": "MIT",
+  "author": "Henrik Lund Thomassen <hej@henriklund.dk>",
   "main": "app.js",
   "scripts": {
     "build": "tsc",
