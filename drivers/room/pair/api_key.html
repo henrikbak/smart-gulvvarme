@@ -10,33 +10,52 @@
   }
   .error { color: #d1344c; margin: 0 0 12px; min-height: 1.2em; }
   .hint { opacity: 0.7; font-size: 13px; margin: 0 0 20px; }
+  /* Hidden until we know this view is not being skipped, so a user who already
+     has a working key never sees the form flash past. The script reveals it on
+     every path that stays here, plus a failsafe timer - never a blank screen. */
+  #form { visibility: hidden; }
 </style>
 
-<header class="homey-header">
-  <h1 class="homey-title" data-i18n="pair.title"></h1>
-  <p class="homey-subtitle" data-i18n="pair.subtitle"></p>
-</header>
+<div id="form">
+  <header class="homey-header">
+    <h1 class="homey-title" data-i18n="pair.title"></h1>
+    <p class="homey-subtitle" data-i18n="pair.subtitle"></p>
+  </header>
 
-<fieldset class="field">
-  <label for="apiKey" data-i18n="pair.keyLabel"></label>
-  <!-- password, so the key is not shoulder-readable while typing -->
-  <input id="apiKey" type="password" autocomplete="off" spellcheck="false" placeholder="sgv_live_..." />
-</fieldset>
+  <fieldset class="field">
+    <label for="apiKey" data-i18n="pair.keyLabel"></label>
+    <!-- password, so the key is not shoulder-readable while typing -->
+    <input id="apiKey" type="password" autocomplete="off" spellcheck="false" placeholder="sgv_live_..." />
+  </fieldset>
 
-<p class="error" id="error"></p>
-<p class="hint" data-i18n="pair.hint"></p>
+  <p class="error" id="error"></p>
+  <p class="hint" data-i18n="pair.hint"></p>
 
-<button id="submit" class="homey-button-primary-full" data-i18n="pair.submit"></button>
+  <button id="submit" class="homey-button-primary-full" data-i18n="pair.submit"></button>
+</div>
 
 <script type="text/javascript">
-  const input = document.getElementById('apiKey');
-  const submit = document.getElementById('submit');
-  const errorEl = document.getElementById('error');
+  var form = document.getElementById('form');
+  var input = document.getElementById('apiKey');
+  var submit = document.getElementById('submit');
+  var errorEl = document.getElementById('error');
 
-  let mode = 'pair';
-  let busy = false;
+  var mode = 'pair';
+  var busy = false;
+
+  // Reveal the form and focus it. Called on every path that stays on this view.
+  function showForm() {
+    form.style.visibility = 'visible';
+    input.focus();
+  }
+
+  // Failsafe: if the driver round-trip below never calls back, show the form
+  // anyway rather than leaving the user staring at nothing.
+  var failsafe = setTimeout(showForm, 4000);
 
   function showError(message) {
+    clearTimeout(failsafe);
+    showForm();
     errorEl.textContent = message || '';
   }
 
@@ -44,6 +63,35 @@
     busy = value;
     submit.disabled = value;
     input.disabled = value;
+  }
+
+  /**
+   * Talk to the driver.
+   *
+   * This pairing frontend is callback-style: Homey.ready() and Homey.emit()
+   * return undefined, not a promise, so `Homey.ready().then(...)` throws and
+   * kills the whole view before it can navigate. Other builds return a thenable.
+   * This helper copes with either shape and always calls back exactly once.
+   */
+  function call(event, data, cb) {
+    var settled = false;
+    function done(err, result) {
+      if (settled) return;
+      settled = true;
+      cb(err, result);
+    }
+
+    var ret;
+    try {
+      ret = Homey.emit(event, data, function (err, result) { done(err, result); });
+    } catch (err) {
+      done(err);
+      return;
+    }
+
+    if (ret && typeof ret.then === 'function') {
+      ret.then(function (result) { done(null, result); }, function (err) { done(err); });
+    }
   }
 
   // Pairing continues to the device list; repair has nowhere to go, so it closes.
@@ -55,39 +103,50 @@
     }
   }
 
-  async function save() {
+  function save() {
     if (busy) return;
     showError('');
     setBusy(true);
 
-    try {
-      const result = await Homey.emit('validate_key', input.value);
+    call('validate_key', input.value, function (err, result) {
+      setBusy(false);
+      if (err) {
+        showError(err && err.message ? err.message : String(err));
+        return;
+      }
       if (result && result.ok) {
         finish();
         return;
       }
       showError((result && result.error) || 'Unknown error');
-    } catch (err) {
-      showError(err && err.message ? err.message : String(err));
-    } finally {
-      setBusy(false);
-    }
+    });
   }
 
   submit.addEventListener('click', save);
-  input.addEventListener('keydown', (event) => {
+  input.addEventListener('keydown', function (event) {
     if (event.key === 'Enter') save();
   });
 
-  Homey.ready().then(async () => {
-    mode = await Homey.emit('pair_mode');
+  // Signal the view is ready; the return value is not a promise here.
+  try { Homey.ready(); } catch (err) {}
 
-    // A key that already works should not be re-typed just to add another room.
-    if (mode === 'pair' && (await Homey.emit('has_key'))) {
-      Homey.showView('list_devices');
+  call('pair_mode', null, function (err, resolvedMode) {
+    if (!err && resolvedMode) mode = resolvedMode;
+
+    if (mode !== 'pair') {
+      clearTimeout(failsafe);
+      showForm();
       return;
     }
 
-    input.focus();
+    // A key that already works should not be re-typed just to add another room.
+    call('has_key', null, function (keyErr, hasKey) {
+      clearTimeout(failsafe);
+      if (!keyErr && hasKey) {
+        Homey.showView('list_devices');
+        return;
+      }
+      showForm();
+    });
   });
 </script>
