@@ -298,7 +298,6 @@ module.exports = class RoomDevice extends Homey.Device {
     this.set('heating_power', state.heatingPower);
     this.set('preset_mode', state.presetMode);
     this.set('measure_battery', state.batteryPercent);
-    this.set('alarm_battery', state.batteryPercent === null ? null : state.batteryPercent < 15);
     this.set('measure_signal_strength', state.signalStrength);
     this.set('alarm_connectivity', state.sensorStale);
 
