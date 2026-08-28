@@ -1,8 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 960" width="960" height="960">
   <g fill="none" stroke="#000" stroke-width="52" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M200 460 L480 240 L760 460 L760 760 L200 760 Z"/>
-    <path d="M480 240 L480 120"/>
-    <path d="M370 150 Q480 60 590 150"/>
-    <path d="M300 210 Q480 -20 660 210"/>
+    <rect x="150" y="270" width="660" height="356" rx="62"/>
+    <rect x="256" y="352" width="448" height="192" rx="38"/>
+    <path d="M266 626 L266 756"/>
+    <path d="M406 626 L406 756"/>
+    <path d="M554 626 L554 756"/>
+    <path d="M694 626 L694 756"/>
   </g>
 </svg>
