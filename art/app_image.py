@@ -217,7 +217,7 @@ SVG = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" width="{
   </g>
 
   <!-- the real test of a warm floor -->
-  <g>
+  <g transform="translate(660 636) scale(0.6) translate(-660 -636)">
     <ellipse cx="646" cy="634" rx="134" ry="22" fill="#7A4A24" opacity="0.24" filter="url(#shadow)"/>
 
     <!-- tail, curling round the front -->

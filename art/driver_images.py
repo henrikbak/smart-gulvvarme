@@ -154,16 +154,25 @@ ROOM = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" width
 
 # -- controller unit -----------------------------------------------------------
 
-# A light axonometric: `U` runs along the width of the box, `V` into the depth.
-AX, AY = 140.0, 476.0          # front-left corner of the lid
-UX, UY = 430.0, 48.0
-VX, VY = 152.0, -136.0
-BOX_H = 124.0
+# A light axonometric seen from fairly high up: `U` runs along the width of the
+# box, `V` into its depth. The steep V and the shallow wall height are what put
+# the viewer above the box rather than level with it.
+AX, AY = 168.0, 560.0          # front-left corner of the lid
+UX, UY = 562.0, 45.0
+VX, VY = 125.0, -266.0
+BOX_H = 94.0
+
+FRONT_W, FRONT_H = 1000.0, 300.0   # local drawing space for the front wall
 
 
 def lid(s, t):
     """A point on the lid, in fractions of its width and depth."""
     return AX + s * UX + t * VX, AY + s * UY + t * VY
+
+
+def front(s, y):
+    """A point on the front wall: `s` across its width, `y` down its height."""
+    return AX + s * UX, AY + s * UY + y * BOX_H
 
 
 def quad(pts, fill, stroke=None, sw=3):
@@ -178,116 +187,90 @@ def plane(o, u, v, w, h):
             f'{o[0]:.2f},{o[1]:.2f})')
 
 
-def qr(x, y, size, modules=21):
+def qr(x, y, size, modules=25):
     """A stand-in QR block - finder squares and a stable scatter of modules."""
     import random
-    rnd = random.Random(7)
+    rnd = random.Random(11)
     m = size / modules
-    cells = []
+    cells = [f'<rect x="{x - m * 2:.1f}" y="{y - m * 2:.1f}" width="{size + m * 4:.1f}" '
+             f'height="{size + m * 4:.1f}" fill="#FFFFFF"/>']
+
     def finder(cx, cy):
-        cells.append(f'<rect x="{x + cx * m:.1f}" y="{y + cy * m:.1f}" width="{7 * m:.1f}" height="{7 * m:.1f}" fill="{NAVY}"/>')
+        cells.append(f'<rect x="{x + cx * m:.1f}" y="{y + cy * m:.1f}" width="{7 * m:.1f}" height="{7 * m:.1f}" fill="#2B3138"/>')
         cells.append(f'<rect x="{x + (cx + 1) * m:.1f}" y="{y + (cy + 1) * m:.1f}" width="{5 * m:.1f}" height="{5 * m:.1f}" fill="#FFFFFF"/>')
-        cells.append(f'<rect x="{x + (cx + 2) * m:.1f}" y="{y + (cy + 2) * m:.1f}" width="{3 * m:.1f}" height="{3 * m:.1f}" fill="{NAVY}"/>')
+        cells.append(f'<rect x="{x + (cx + 2) * m:.1f}" y="{y + (cy + 2) * m:.1f}" width="{3 * m:.1f}" height="{3 * m:.1f}" fill="#2B3138"/>')
+
     def in_finder(r, c):
-        return ((r < 8 and c < 8) or (r < 8 and c >= modules - 8) or (r >= modules - 8 and c < 8))
+        return (r < 8 and c < 8) or (r < 8 and c >= modules - 8) or (r >= modules - 8 and c < 8)
+
     for r in range(modules):
         for c in range(modules):
             if in_finder(r, c) or not rnd.getrandbits(1):
                 continue
-            cells.append(f'<rect x="{x + c * m:.1f}" y="{y + r * m:.1f}" width="{m:.1f}" height="{m:.1f}" fill="{NAVY}"/>')
+            cells.append(f'<rect x="{x + c * m:.1f}" y="{y + r * m:.1f}" width="{m:.1f}" height="{m:.1f}" fill="#2B3138"/>')
     finder(0, 0); finder(modules - 7, 0); finder(0, modules - 7)
     return "".join(cells)
 
 
-LOGO = f'''<g transform="translate(52 228) scale(1.52)">
-    <path d="M100 14 L184 92 L184 184 L16 184 L16 92 Z" fill="{ORANGE}" stroke="{ORANGE}"
-          stroke-width="16" stroke-linejoin="round"/>
-    <path d="M46 108 H124 a15 15 0 0 1 0 30 H64 a15 15 0 0 0 0 30 H150" fill="none"
-          stroke="#FFFFFF" stroke-width="15" stroke-linecap="round"/>
-  </g>
-  <text x="392" y="410" font-family="Liberation Serif, Georgia, serif" font-size="186"
-        font-weight="700" fill="{ORANGE}" letter-spacing="4">SMART</text>
-  <text x="404" y="588" font-family="Liberation Serif, Georgia, serif" font-size="92"
-        font-weight="700" fill="{NAVY}" letter-spacing="2">GULVVARME</text>'''
-
-
-def panel():
-    o = lid(0.07, 0.88)
-    u = (0.86 * UX, 0.86 * UY)
-    v = (-0.76 * VX, -0.76 * VY)
-    return f'''<g transform="{plane(o, u, v, 1400, 800)}">
-    <rect x="0" y="0" width="1400" height="800" fill="#F5F7F8"/>
-    <rect x="26" y="26" width="1348" height="748" fill="none" stroke="#CDD4DB" stroke-width="9"/>
-    {LOGO}
-    {qr(1146, 372, 202)}
-    <text x="1146" y="636" font-family="{FONT}" font-size="36" fill="#7C858F">Scan for Info</text>
+def label():
+    """The recessed plate on the lid, carrying nothing but the code."""
+    o = lid(0.08, 0.87)
+    u = (0.84 * UX, 0.84 * UY)
+    v = (-0.74 * VX, -0.74 * VY)
+    return f'''<g transform="{plane(o, u, v, 1200, 800)}">
+    <rect x="0" y="0" width="1200" height="800" fill="#F7F8F9"/>
+    <rect x="24" y="24" width="1152" height="752" fill="none" stroke="#D2D8DE" stroke-width="8"/>
+    {qr(450, 250, 300)}
   </g>'''
 
 
 def screws():
     out = []
-    for s_, t_ in ((0.045, 0.085), (0.955, 0.085), (0.045, 0.915), (0.955, 0.915), (0.5, 0.085), (0.5, 0.915)):
+    for s_, t_ in ((0.04, 0.075), (0.96, 0.075), (0.04, 0.925), (0.96, 0.925),
+                   (0.5, 0.075), (0.5, 0.925)):
         x, y = lid(s_, t_)
-        out.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="8.5" fill="#DDE2E7" stroke="#B6BEC7" stroke-width="2.5"/>')
+        out.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="9" fill="#DDE2E7" stroke="#B6BEC7" stroke-width="2.5"/>')
         out.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="3.5" fill="#9AA3AD"/>')
     return "".join(out)
 
 
-def cable_slots():
-    """Cable entries along the front face, with leads running out of them."""
-    routes = [(0.20, 118, 128), (0.38, 176, 146), (0.56, 246, 158)]
-    slots, leads = [], []
-    for s_, end_x, drop in routes:
-        x = AX + s_ * UX
-        y = AY + s_ * UY + BOX_H * 0.5
-        slots.append(f'<rect x="{x - 27:.1f}" y="{y:.1f}" width="54" height="32" rx="7" fill="#3C444E"/>')
-        slots.append(f'<rect x="{x - 27:.1f}" y="{y:.1f}" width="54" height="9" rx="4" fill="#2B323A"/>')
-        leads.append(f'<path d="M{x:.1f} {y + 28:.1f} C{x:.1f} {y + drop * 0.7:.1f} '
-                     f'{end_x + 40:.1f} {y + drop * 0.5:.1f} {end_x:.1f} {y + drop:.1f}" '
-                     f'fill="none" stroke="#C4C9CF" stroke-width="16" stroke-linecap="round"/>')
-    return "".join(leads) + "".join(slots)
+def openings():
+    """Four cable entries, drawn on the wall's own plane so they lie with it."""
+    o = (AX, AY)
+    glands = f'''<g transform="{plane(o, (UX, UY), (0.0, BOX_H), FRONT_W, FRONT_H)}">
+    {"".join(f"""<rect x="{c - 62}" y="66" width="124" height="182" rx="20" fill="#3C444E"/>
+    <rect x="{c - 62}" y="66" width="124" height="46" rx="20" fill="#2B323A"/>"""
+             for c in (168, 388, 608, 828))}
+  </g>'''
+    leads = []
+    for s_, end_x, drop in ((0.168, 132, 88), (0.388, 258, 100), (0.608, 402, 110), (0.828, 552, 120)):
+        x, y = front(s_, 0.83)
+        leads.append(f'<path d="M{x:.1f} {y:.1f} C{x:.1f} {y + drop * 0.72:.1f} '
+                     f'{end_x + 44:.1f} {y + drop * 0.52:.1f} {end_x:.1f} {y + drop:.1f}" '
+                     f'fill="none" stroke="#C4C9CF" stroke-width="17" stroke-linecap="round"/>')
+    return "".join(leads) + glands
 
 
 BUILDING = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" width="1000" height="1000">
   <defs>
-    <linearGradient id="valve" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0" stop-color="#2E5FA8"/>
-      <stop offset="0.42" stop-color="#3E7ACB"/>
-      <stop offset="1" stop-color="#26518F"/>
-    </linearGradient>
     <filter id="drop" x="-40%" y="-40%" width="180%" height="180%">
-      <feGaussianBlur stdDeviation="15"/>
+      <feGaussianBlur stdDeviation="16"/>
     </filter>
   </defs>
   <rect width="1000" height="1000" fill="#FFFFFF"/>
 
-  <g transform="translate(480 520) scale(1.09) translate(-480 -520)">
-  <ellipse cx="470" cy="712" rx="330" ry="42" fill="#9AA9BC" opacity="0.3" filter="url(#drop)"/>
-  <ellipse cx="812" cy="716" rx="96" ry="22" fill="#9AA9BC" opacity="0.3" filter="url(#drop)"/>
-
-  <!-- lead running out to the actuator -->
-  <path d="M556 606 C640 690 700 706 762 692" fill="none" stroke="#C4C9CF" stroke-width="16" stroke-linecap="round"/>
+  <ellipse cx="512" cy="716" rx="358" ry="42" fill="#9AA9BC" opacity="0.3" filter="url(#drop)"/>
 
   <!-- enclosure -->
-  {quad([lid(0, 1), lid(1, 1), (AX + UX + VX, AY + UY + VY + BOX_H), (AX + VX, AY + VY + BOX_H)], "#CFD5DC")}
-  {quad([lid(0, 0), lid(1, 0), (AX + UX, AY + UY + BOX_H), (AX, AY + BOX_H)], "#E1E5EA", "#C3CAD2")}
-  {quad([lid(1, 0), lid(1, 1), (AX + UX + VX, AY + UY + VY + BOX_H), (AX + UX, AY + UY + BOX_H)], "#D2D8DF", "#C3CAD2")}
-  {quad([lid(0, 0), lid(1, 0), lid(1, 1), lid(0, 1)], "#EEF1F3", "#C3CAD2")}
-  {quad([lid(0.03, 0.06), lid(0.97, 0.06), lid(0.97, 0.94), lid(0.03, 0.94)], "#F2F4F6", "#D7DCE2", 2)}
+  {quad([lid(0, 1), lid(1, 1), (AX + UX + VX, AY + UY + VY + BOX_H), (AX + VX, AY + VY + BOX_H)], "#C7CED6")}
+  {quad([lid(0, 0), lid(1, 0), (AX + UX, AY + UY + BOX_H), (AX, AY + BOX_H)], "#E3E7EB", "#B4BDC7")}
+  {quad([lid(1, 0), lid(1, 1), (AX + UX + VX, AY + UY + VY + BOX_H), (AX + UX, AY + UY + BOX_H)], "#D0D6DD", "#B4BDC7")}
+  {quad([lid(0, 0), lid(1, 0), lid(1, 1), lid(0, 1)], "#F0F2F4", "#B4BDC7")}
+  {quad([lid(0.025, 0.05), lid(0.975, 0.05), lid(0.975, 0.95), lid(0.025, 0.95)], "#F5F7F8", "#DAE0E5", 2)}
 
-  {panel()}
+  {label()}
   {screws()}
-  {cable_slots()}
-
-  <!-- thermal actuator -->
-  <g>
-    <path d="M754 706 L754 596 a58 26 0 0 1 116 0 L870 706 a58 26 0 0 1 -116 0 Z" fill="url(#valve)"/>
-    <ellipse cx="812" cy="596" rx="58" ry="26" fill="#5C93DC"/>
-    <ellipse cx="812" cy="596" rx="40" ry="17" fill="#4A7FC6"/>
-    <rect x="758" y="648" width="108" height="26" rx="6" fill="#1F4478" opacity="0.55"/>
-    <path d="M754 700 a58 26 0 0 0 116 0" fill="none" stroke="#1B3C6B" stroke-width="6"/>
-  </g>
-  </g>
+  {openings()}
 </svg>
 '''
 
