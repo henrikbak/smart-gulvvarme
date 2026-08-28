@@ -1,32 +1,13 @@
-Smart Gulvvarme brings your underfloor heating into Homey, room by room.
+Smart Gulvvarme keeps every room in the house at the temperature it is supposed
+to be, and this app brings that into Homey. Your heating system already knows
+how each room behaves - how long it takes to warm up, how quickly it gives the
+heat back, and what the weather is about to do - and every one of those rooms
+now appears in Homey as a thermostat, showing its temperature and humidity, its
+setpoint and comfort level, and whether the floor is calling for heat right now.
 
-Each room becomes a thermostat you can see and control like any other Homey
-device: current temperature and humidity, the target temperature, whether the
-room is calling for heat right now, and how hard it is working. Turn a room off
-and it is held at zero power; turn it back on and the heating engine takes over
-again.
-
-The rooms are the ones you have already set up in Smart Gulvvarme, with the same
-names, so they line up with your Homey zones straight away.
-
-FLOWS
-
-Trigger on a room starting or stopping heating, on the comfort level changing,
-or on someone changing the setpoint outside Homey - so a manual override is
-something your Flows can react to rather than something that quietly undoes
-them. Act by setting a target temperature or comfort level, boosting a room for
-a set number of minutes, or overriding the heating power directly.
-
-A separate building device reports the outdoor conditions your system is
-steering by, and tells you when the gateway stops reporting - which is worth
-knowing well before the floor goes cold.
-
-GETTING STARTED
-
-You will need an API key for your Smart Gulvvarme account. Enter it when you add
-your first room; you can replace it later under the app's settings, without
-removing your devices or breaking your Flows.
-
-Requires Homey Pro.
-
-This app is not made by Smart Gulvvarme.
+From there the heating stops being something you adjust and becomes something
+your home takes care of. Warm the bathroom before the alarm goes off, ease the
+whole house down when everybody leaves, and let the outdoor conditions your
+system is already steering by drive the rest of your home too. Smart Gulvvarme
+is a Danish underfloor heating system; this app is an independent integration
+and is not made or endorsed by them.

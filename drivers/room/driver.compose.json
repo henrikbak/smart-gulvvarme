@@ -13,7 +13,6 @@
     "heating_power",
     "preset_mode",
     "measure_battery",
-    "alarm_battery",
     "measure_signal_strength",
     "alarm_connectivity"
   ],
