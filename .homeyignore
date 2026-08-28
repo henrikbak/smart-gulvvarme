@@ -4,3 +4,5 @@
 tsconfig.json
 *.ts
 !*.d.ts
+/README.md
+/art/
