@@ -2,5 +2,8 @@
   "1.0.0": {
     "en": "First release. Adds every room as a thermostat, plus a building device for outdoor conditions and gateway status, and Flow cards for heating, comfort levels, boosting and manual power.",
     "da": "Første udgivelse. Tilføjer hvert rum som en termostat, plus en bygningsenhed med udendørsforhold og gateway-status, og flow-kort til varme, komfortniveauer, boost og manuel effekt."
+  },
+  "1.0.1": {
+    "en": "Room devices now show a single battery level instead of two. New artwork for the app and both devices, with icons drawn from the actual hardware."
   }
 }
