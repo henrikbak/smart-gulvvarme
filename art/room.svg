@@ -1,68 +1,49 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" width="1000" height="1000">
   <defs>
-    <linearGradient id="case" x1="0.1" y1="0" x2="0.9" y2="1">
+    <linearGradient id="case" x1="0.15" y1="0" x2="0.85" y2="1">
       <stop offset="0" stop-color="#FFFFFF"/>
-      <stop offset="0.55" stop-color="#F7F9FC"/>
-      <stop offset="1" stop-color="#E7ECF3"/>
+      <stop offset="0.6" stop-color="#FAFBFC"/>
+      <stop offset="1" stop-color="#ECEFF3"/>
     </linearGradient>
-    <linearGradient id="edge" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#DCE3EC"/>
-      <stop offset="1" stop-color="#C2CCD9"/>
+    <linearGradient id="rim" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#DFE4EA"/>
+      <stop offset="1" stop-color="#C3CBD5"/>
     </linearGradient>
-    <linearGradient id="screen" x1="0" y1="0" x2="0.4" y2="1">
-      <stop offset="0" stop-color="#1E2F52"/>
-      <stop offset="1" stop-color="#101B32"/>
-    </linearGradient>
-    <linearGradient id="gloss" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.32"/>
-      <stop offset="0.5" stop-color="#FFFFFF" stop-opacity="0.05"/>
-      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
-    </linearGradient>
-    <radialGradient id="led" cx="0.5" cy="0.5" r="0.5">
-      <stop offset="0" stop-color="#FFC48A"/>
-      <stop offset="0.45" stop-color="#F36B21"/>
-      <stop offset="1" stop-color="#D2560F"/>
+    <radialGradient id="eink" cx="0.38" cy="0.32" r="0.85">
+      <stop offset="0" stop-color="#EFEFEB"/>
+      <stop offset="0.7" stop-color="#E6E6E1"/>
+      <stop offset="1" stop-color="#D9D9D3"/>
     </radialGradient>
     <filter id="drop" x="-40%" y="-40%" width="180%" height="180%">
-      <feGaussianBlur stdDeviation="16"/>
-    </filter>
-    <filter id="halo" x="-60%" y="-60%" width="220%" height="220%">
-      <feGaussianBlur stdDeviation="9"/>
+      <feGaussianBlur stdDeviation="15"/>
     </filter>
   </defs>
   <rect width="1000" height="1000" fill="#FFFFFF"/>
 
-  <!-- contact shadow -->
-  <ellipse cx="500" cy="862" rx="268" ry="32" fill="#9AA9BC" opacity="0.34" filter="url(#drop)"/>
+  <ellipse cx="500" cy="830" rx="270" ry="30" fill="#9AA9BC" opacity="0.32" filter="url(#drop)"/>
 
-  <!-- case -->
-  <rect x="212" y="164" width="576" height="676" rx="68" fill="url(#edge)"/>
-  <rect x="212" y="164" width="576" height="654" rx="68" fill="url(#case)" stroke="#C6D0DD" stroke-width="4"/>
-  <rect x="230" y="182" width="540" height="360" rx="56" fill="url(#gloss)"/>
+  <!-- kickstand -->
+  <path d="M520 700 L604 700 L582 812 Q548 822 522 812 Z" fill="#E3E7EC" stroke="#CDD5DE" stroke-width="4"/>
 
-  <!-- display -->
-  <rect x="278" y="232" width="444" height="344" rx="42" fill="url(#screen)"/>
-  <rect x="278" y="232" width="444" height="344" rx="42" fill="none" stroke="#0B1424" stroke-width="4"/>
-  <text x="466" y="400" font-family="Liberation Sans, Arial, Helvetica, sans-serif" font-size="164" font-weight="600" fill="#FFFFFF"
-        text-anchor="middle" letter-spacing="-4">21.5</text>
-  <circle cx="640" cy="322" r="16" fill="none" stroke="#FFFFFF" stroke-width="10"/>
-  <g opacity="0.95">
-    <path d="M338 478 q24 -32 48 0 q24 32 48 0 q24 -32 48 0" fill="none" stroke="#F36B21"
-          stroke-width="13" stroke-linecap="round"/>
-    <text x="556" y="494" font-family="Liberation Sans, Arial, Helvetica, sans-serif" font-size="54" font-weight="500" fill="#93A4C2"
-          text-anchor="start">45%</text>
+  <!-- case: the rim shows the depth of the disc -->
+  <circle cx="516.0" cy="482.0" r="320.0" fill="url(#rim)"/>
+  <circle cx="496.0" cy="470.0" r="320.0" fill="url(#case)" stroke="#D2D9E1" stroke-width="3"/>
+
+  <!-- e-ink display -->
+  <circle cx="488.0" cy="462.0" r="242.0" fill="#D3D3CD"/>
+  <circle cx="488.0" cy="462.0" r="236.0" fill="url(#eink)"/>
+
+  <!-- bluetooth and battery -->
+  <g>
+    <path d="M446 262 L446 316 L466 300 L438 280 M438 298 L466 278 L446 262"
+          fill="none" stroke="#2E2E2C" stroke-width="6.5" stroke-linejoin="round" stroke-linecap="round"/>
+    <rect x="500" y="270" width="58" height="34" rx="7" fill="none" stroke="#2E2E2C" stroke-width="6.5"/>
+    <rect x="562" y="279" width="9" height="16" rx="3" fill="#2E2E2C"/>
+    <rect x="509" y="279" width="40" height="16" rx="3" fill="#2E2E2C"/>
   </g>
-  <rect x="316" y="528" width="368" height="12" rx="6" fill="#2C3F68"/>
-  <rect x="316" y="528" width="220" height="12" rx="6" fill="#F36B21"/>
 
-  <!-- capacitive controls -->
-  <g stroke="#8E9CB0" stroke-width="13" stroke-linecap="round" fill="none">
-    <path d="M348 684 L414 684"/>
-    <path d="M586 684 L652 684 M619 651 L619 717"/>
-  </g>
-  <circle cx="500" cy="684" r="18" fill="url(#led)"/>
-  <circle cx="500" cy="684" r="28" fill="#F36B21" opacity="0.4" filter="url(#halo)"/>
-
-  <!-- wall bracket edge -->
-  <rect x="330" y="812" width="340" height="18" rx="9" fill="#D3DBE5"/>
+  <!-- temperature over humidity, split by the rule -->
+  <path d="M348.8 350.0 L356.3 342.4 L393.8 342.4 L401.4 350.0 L393.8 357.6 L356.3 357.6 Z" fill="#2E2E2C"/><path d="M348.8 406.0 L356.3 398.4 L393.8 398.4 L401.4 406.0 L393.8 413.6 L356.3 413.6 Z" fill="#2E2E2C"/><path d="M348.8 462.0 L356.3 454.4 L393.8 454.4 L401.4 462.0 L393.8 469.6 L356.3 469.6 Z" fill="#2E2E2C"/><path d="M401.4 359.4 L409.0 366.9 L409.0 389.1 L401.4 396.6 L393.8 389.1 L393.8 366.9 Z" fill="#2E2E2C"/><path d="M348.8 415.4 L356.3 422.9 L356.3 445.1 L348.8 452.6 L341.2 445.1 L341.2 422.9 Z" fill="#2E2E2C"/><path d="M427.7 350.0 L435.3 342.4 L472.8 342.4 L480.4 350.0 L472.8 357.6 L435.3 357.6 Z" fill="#2E2E2C"/><path d="M427.7 406.0 L435.3 398.4 L472.8 398.4 L480.4 406.0 L472.8 413.6 L435.3 413.6 Z" fill="#2E2E2C"/><path d="M427.7 462.0 L435.3 454.4 L472.8 454.4 L480.4 462.0 L472.8 469.6 L435.3 469.6 Z" fill="#2E2E2C"/><path d="M427.7 359.4 L435.3 366.9 L435.3 389.1 L427.7 396.6 L420.2 389.1 L420.2 366.9 Z" fill="#2E2E2C"/><path d="M427.7 415.4 L435.3 422.9 L435.3 445.1 L427.7 452.6 L420.2 445.1 L420.2 422.9 Z" fill="#2E2E2C"/><path d="M480.4 415.4 L487.9 422.9 L487.9 445.1 L480.4 452.6 L472.8 445.1 L472.8 422.9 Z" fill="#2E2E2C"/><circle cx="514.7" cy="453.9" r="8.1" fill="#2E2E2C"/><path d="M534.0 390.3 L539.0 385.3 L562.7 385.3 L567.7 390.3 L562.7 395.3 L539.0 395.3 Z" fill="#2E2E2C"/><path d="M534.0 462.0 L539.0 457.0 L562.7 457.0 L567.7 462.0 L562.7 467.0 L539.0 467.0 Z" fill="#2E2E2C"/><path d="M534.0 396.5 L539.0 401.6 L539.0 414.9 L534.0 419.9 L529.0 414.9 L529.0 401.6 Z" fill="#2E2E2C"/><path d="M567.7 396.5 L572.7 401.6 L572.7 414.9 L567.7 419.9 L562.7 414.9 L562.7 401.6 Z" fill="#2E2E2C"/><path d="M534.0 432.4 L539.0 437.4 L539.0 450.8 L534.0 455.8 L529.0 450.8 L529.0 437.4 Z" fill="#2E2E2C"/><path d="M567.7 432.4 L572.7 437.4 L572.7 450.8 L567.7 455.8 L562.7 450.8 L562.7 437.4 Z" fill="#2E2E2C"/><circle cx="606.7" cy="364.7" r="8.7" fill="none" stroke="#2E2E2C" stroke-width="6.9"/><text x="623.4" y="389.2" font-family="Liberation Sans, Arial, Helvetica, sans-serif" font-size="33.6" font-weight="600" fill="#2E2E2C">C</text>
+  <rect x="286.0" y="504" width="404" height="5" rx="2.5" fill="#2E2E2C"/>
+  <path d="M358.8 536.0 L366.4 528.4 L403.9 528.4 L411.5 536.0 L403.9 543.6 L366.4 543.6 Z" fill="#2E2E2C"/><path d="M358.8 592.0 L366.4 584.4 L403.9 584.4 L411.5 592.0 L403.9 599.6 L366.4 599.6 Z" fill="#2E2E2C"/><path d="M358.8 648.0 L366.4 640.4 L403.9 640.4 L411.5 648.0 L403.9 655.6 L366.4 655.6 Z" fill="#2E2E2C"/><path d="M358.8 545.4 L366.4 552.9 L366.4 575.1 L358.8 582.6 L351.3 575.1 L351.3 552.9 Z" fill="#2E2E2C"/><path d="M358.8 601.4 L366.4 608.9 L366.4 631.1 L358.8 638.6 L351.3 631.1 L351.3 608.9 Z" fill="#2E2E2C"/><path d="M411.5 601.4 L419.0 608.9 L419.0 631.1 L411.5 638.6 L403.9 631.1 L403.9 608.9 Z" fill="#2E2E2C"/><path d="M437.8 536.0 L445.4 528.4 L482.9 528.4 L490.4 536.0 L482.9 543.6 L445.4 543.6 Z" fill="#2E2E2C"/><path d="M437.8 648.0 L445.4 640.4 L482.9 640.4 L490.4 648.0 L482.9 655.6 L445.4 655.6 Z" fill="#2E2E2C"/><path d="M437.8 545.4 L445.4 552.9 L445.4 575.1 L437.8 582.6 L430.2 575.1 L430.2 552.9 Z" fill="#2E2E2C"/><path d="M490.4 545.4 L498.0 552.9 L498.0 575.1 L490.4 582.6 L482.9 575.1 L482.9 552.9 Z" fill="#2E2E2C"/><path d="M437.8 601.4 L445.4 608.9 L445.4 631.1 L437.8 638.6 L430.2 631.1 L430.2 608.9 Z" fill="#2E2E2C"/><path d="M490.4 601.4 L498.0 608.9 L498.0 631.1 L490.4 638.6 L482.9 631.1 L482.9 608.9 Z" fill="#2E2E2C"/><circle cx="524.8" cy="639.9" r="8.1" fill="#2E2E2C"/><path d="M544.1 576.3 L549.1 571.3 L572.8 571.3 L577.8 576.3 L572.8 581.3 L549.1 581.3 Z" fill="#2E2E2C"/><path d="M544.1 648.0 L549.1 643.0 L572.8 643.0 L577.8 648.0 L572.8 653.0 L549.1 653.0 Z" fill="#2E2E2C"/><path d="M544.1 582.5 L549.1 587.6 L549.1 600.9 L544.1 605.9 L539.1 600.9 L539.1 587.6 Z" fill="#2E2E2C"/><path d="M577.8 582.5 L582.8 587.6 L582.8 600.9 L577.8 605.9 L572.8 600.9 L572.8 587.6 Z" fill="#2E2E2C"/><path d="M544.1 618.4 L549.1 623.4 L549.1 636.8 L544.1 641.8 L539.1 636.8 L539.1 623.4 Z" fill="#2E2E2C"/><path d="M577.8 618.4 L582.8 623.4 L582.8 636.8 L577.8 641.8 L572.8 636.8 L572.8 623.4 Z" fill="#2E2E2C"/><text x="610.0" y="574.1" font-family="Liberation Sans, Arial, Helvetica, sans-serif" font-size="35.8" font-weight="600" fill="#2E2E2C">%</text>
 </svg>
