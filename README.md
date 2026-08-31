@@ -32,6 +32,7 @@ Repository layout:
 - `drivers/room`, `drivers/building` — the two drivers, their pairing views and assets
 - `.homeycompose/` — app manifest, capabilities, and Flow card definitions (compiled into `app.json`)
 - `test/` — `node --test` suites run against the compiled output
+- `docs/` — the API schema, and [an exploration of dashboard widgets](docs/widgets.md)
 
 ---
 
