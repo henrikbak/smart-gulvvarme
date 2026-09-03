@@ -105,8 +105,10 @@
 
         // While a press is in flight the poll would otherwise pull the old value
         // back on screen, the same problem the device solves for the app.
-        var pending = null;
+        var pending = { target: null, preset: null };
         var pendingUntil = 0;
+        var latest = null;
+        var presses = 0;
 
         function element(tag, className, text) {
           var el = document.createElement(tag);
@@ -141,36 +143,65 @@
           return span;
         }
 
-        function write(room, target) {
-          pending = target;
+        /**
+         * Show the press at once, then send it.
+         *
+         * The app only broadcasts on a poll tick, up to a minute out, so a
+         * button that waits for that round trip reads as dead. On the way back
+         * the state is pulled once rather than waiting for the tick.
+         */
+        function press(room, path, body, optimistic) {
+          Object.keys(optimistic).forEach(function (key) { pending[key] = optimistic[key]; });
           pendingUntil = Date.now() + 10000;
+          // A later press outruns this one; its answer is the one that counts.
+          presses += 1;
+          var mine = presses;
           Homey.hapticFeedback();
-          draw(room, target);
+          draw(room, pending);
 
-          Homey.api('POST', '/target', {
+          function settle(state) {
+            if (mine !== presses) return;
+            pending = { target: null, preset: null };
+            pendingUntil = 0;
+            if (state !== null) render(state);
+          }
+
+          Homey.api('POST', path, body)
+            .then(function () {
+              // The device wrote through and applied the response, so the state
+              // now carries the new value and the override can go.
+              return Homey.api('GET', '/', {}).then(settle);
+            })
+            .catch(function (err) {
+              console.error(err);
+              settle(latest);
+            });
+        }
+
+        function write(room, target) {
+          press(room, '/target', {
             buildingId: room.buildingId,
             roomId: room.roomId,
             temperature: target,
-          }).catch(function (err) {
-            console.error(err);
-            pending = null;
-            draw(room, null);
-          });
+          }, { target: target });
         }
 
         function choosePreset(room, preset) {
-          Homey.hapticFeedback();
-          Homey.api('POST', '/preset', {
+          press(room, '/preset', {
             buildingId: room.buildingId,
             roomId: room.roomId,
             preset: preset,
-          }).catch(console.error);
+          }, { preset: preset });
         }
 
         function draw(room, override) {
-          var target = override !== null && override !== undefined
-            ? override
+          var pressed = override || { target: null, preset: null };
+          var target = pressed.target !== null && pressed.target !== undefined
+            ? pressed.target
             : room.targetTemperature;
+          var presetMode = pressed.preset !== null && pressed.preset !== undefined
+            ? pressed.preset
+            : room.presetMode;
 
           var stack = element('div', 'stack');
 
@@ -224,7 +255,7 @@
 
           var presets = element('div', 'presets');
           PRESETS.forEach(function (preset) {
-            var button = element('button', 'preset' + (room.presetMode === preset ? ' on' : ''),
+            var button = element('button', 'preset' + (presetMode === preset ? ' on' : ''),
               __('widgets.roomTile.preset.' + preset));
             button.type = 'button';
             button.addEventListener('click', function () { choosePreset(room, preset); });
@@ -236,6 +267,7 @@
         }
 
         function render(state) {
+          latest = state;
           if (!state.hasKey) {
             message(__('widgets.common.noKey'));
           } else {
@@ -246,7 +278,7 @@
                 : __('widgets.common.pickRoom'));
             } else {
               var override = Date.now() < pendingUntil ? pending : null;
-              if (override === null) pending = null;
+              if (override === null) pending = { target: null, preset: null };
               draw(room, override);
             }
           }
