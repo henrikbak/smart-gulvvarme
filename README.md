@@ -21,6 +21,8 @@ npm run build       # typecheck via tsc
 npm run lint        # eslint-config-athom
 npm test            # build + node --test against .homeybuild
 npm run validate    # homey app validate --level publish
+
+python3 test/manual/check-widgets.py   # render the widgets against a stubbed Homey
 ```
 
 `npm run gen:types` regenerates `lib/api-schema.ts` from `docs/openapi.json` when the Smart
@@ -31,8 +33,9 @@ Repository layout:
 - `app.ts`, `lib/` — API client, poller, and the mapper that turns API payloads into device state
 - `drivers/room`, `drivers/building` — the two drivers, their pairing views and assets
 - `.homeycompose/` — app manifest, capabilities, and Flow card definitions (compiled into `app.json`)
+- `widgets/` — the five dashboard widgets, each with its own API, page and previews
 - `test/` — `node --test` suites run against the compiled output
-- `docs/` — the API schema, and [an exploration of dashboard widgets](docs/widgets.md)
+- `docs/` — the API schema, and [notes on the dashboard widgets](docs/widgets.md)
 
 ---
 

@@ -47,5 +47,50 @@
       "invalid_key": "That API key was not accepted.",
       "unreachable": "Could not reach Smart Gulvvarme."
     }
+  },
+  "widgets": {
+    "common": {
+      "noKey": "No API key is configured.",
+      "noRooms": "No rooms are paired yet.",
+      "pickRoom": "Choose a room in the widget settings.",
+      "pickBuilding": "Choose a building in the widget settings.",
+      "roomGone": "That room is no longer paired.",
+      "failed": "Could not reach the app."
+    },
+    "heatStrip": {
+      "idle": "No room is calling for heat."
+    },
+    "roomTile": {
+      "humidity": "Humidity {{percent}} %",
+      "heating": "Heating {{percent}} %",
+      "idle": "Not heating",
+      "target": "Target temperature",
+      "preset": {
+        "none": "Off",
+        "low": "Low",
+        "medium": "Medium",
+        "high": "High"
+      }
+    },
+    "building": {
+      "outdoor": "Outdoor temperature",
+      "clouds": "Cloud cover",
+      "online": "Gateway online",
+      "offline": "Gateway offline",
+      "compass": "N,NNE,NE,ENE,E,ESE,SE,SSE,S,SSW,SW,WSW,W,WNW,NW,NNW",
+      "lastSeen": "Last seen {{time}}"
+    },
+    "sensors": {
+      "room": "Room",
+      "humidity": "Humidity",
+      "battery": "Battery",
+      "stale": "Not reporting: {{names}}",
+      "allWell": "Every sensor is reporting."
+    },
+    "boost": {
+      "label": "Boost",
+      "summary": "{{temperature}} °C for {{minutes}} min",
+      "failed": "Could not start"
+    }
   }
 }

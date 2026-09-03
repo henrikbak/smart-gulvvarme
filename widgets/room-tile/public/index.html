@@ -1,0 +1,264 @@
+<html>
+  <head>
+    <style>
+      body { color: var(--homey-text-color); }
+
+      .stack { display: flex; flex-direction: column; gap: var(--homey-su-4); }
+
+      .top { display: flex; align-items: flex-start; gap: var(--homey-su-3); }
+      .top .left { flex: 1 1 auto; min-width: 0; }
+
+      .big {
+        font-size: var(--homey-font-size-xxlarge);
+        line-height: var(--homey-line-height-xxlarge);
+        font-weight: var(--homey-font-weight-bold);
+      }
+
+      .pill {
+        flex: 0 0 auto;
+        display: flex;
+        align-items: center;
+        gap: var(--homey-su-2);
+        padding: 6px 10px;
+        border-radius: var(--homey-border-radius-small);
+        background: var(--homey-color-mono-100);
+      }
+      .pill .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--homey-color-mono-300); }
+      .pill.heating .dot { background: var(--homey-color-orange); }
+
+      .setpoint { display: flex; align-items: center; gap: var(--homey-su-3); }
+      .step {
+        flex: 0 0 auto;
+        width: 44px;
+        height: 44px;
+        border: none;
+        border-radius: var(--homey-border-radius-small);
+        background: var(--homey-color-mono-100);
+        color: var(--homey-text-color);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .step:disabled { opacity: .4; cursor: default; }
+      .setpoint .value { flex: 1 1 auto; text-align: center; }
+      .value .degrees {
+        font-size: var(--homey-font-size-large);
+        line-height: var(--homey-line-height-large);
+        font-weight: var(--homey-font-weight-medium);
+      }
+
+      .presets {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: var(--homey-su-1);
+      }
+      .preset {
+        border: none;
+        padding: 10px 0;
+        border-radius: var(--homey-border-radius-small);
+        background: var(--homey-color-mono-100);
+        color: var(--homey-text-color-light);
+        font-family: inherit;
+        font-size: var(--homey-font-size-small);
+        line-height: var(--homey-line-height-small);
+        cursor: pointer;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .preset.on {
+        background: var(--homey-color-orange);
+        color: var(--homey-color-white);
+        font-weight: var(--homey-font-weight-medium);
+      }
+
+      .message { display: flex; align-items: center; min-height: 36px; }
+    </style>
+  </head>
+
+  <body class="homey-widget">
+    <div id="root"></div>
+
+    <script type="text/javascript">
+      function onHomeyReady(Homey) {
+        var settings = Homey.getSettings();
+        var root = document.getElementById('root');
+
+        // Ask for exactly what was drawn. Counting rows by hand drifts the
+        // moment the styling changes, and a frame shorter than its content
+        // clips silently.
+        function measure() {
+          var style = window.getComputedStyle(document.body);
+          return Math.ceil(root.getBoundingClientRect().height
+            + parseFloat(style.paddingTop) + parseFloat(style.paddingBottom));
+        }
+        var PRESETS = ['none', 'low', 'medium', 'high'];
+
+        // While a press is in flight the poll would otherwise pull the old value
+        // back on screen, the same problem the device solves for the app.
+        var pending = null;
+        var pendingUntil = 0;
+
+        function element(tag, className, text) {
+          var el = document.createElement(tag);
+          if (className) el.className = className;
+          if (text !== undefined) el.textContent = text;
+          return el;
+        }
+
+        function degrees(value, digits) {
+          return value === null ? '–' : value.toFixed(digits).replace('.', ',');
+        }
+
+        function chosenRoom(state) {
+          var wanted = settings.room;
+          if (!wanted || !wanted.roomId) return null;
+          var match = state.rooms.filter(function (room) {
+            return room.roomId === wanted.roomId && room.buildingId === wanted.buildingId;
+          });
+          return match.length > 0 ? match[0] : null;
+        }
+
+        function message(text) {
+          root.replaceChildren();
+          root.append(element('div', 'message homey-text-small-light', text));
+        }
+
+        function icon(paths) {
+          var span = document.createElement('span');
+          span.innerHTML = '<svg width="20" height="20" viewBox="0 0 20 20" fill="none"'
+            + ' stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="'
+            + paths + '"/></svg>';
+          return span;
+        }
+
+        function write(room, target) {
+          pending = target;
+          pendingUntil = Date.now() + 10000;
+          Homey.hapticFeedback();
+          draw(room, target);
+
+          Homey.api('POST', '/target', {
+            buildingId: room.buildingId,
+            roomId: room.roomId,
+            temperature: target,
+          }).catch(function (err) {
+            console.error(err);
+            pending = null;
+            draw(room, null);
+          });
+        }
+
+        function choosePreset(room, preset) {
+          Homey.hapticFeedback();
+          Homey.api('POST', '/preset', {
+            buildingId: room.buildingId,
+            roomId: room.roomId,
+            preset: preset,
+          }).catch(console.error);
+        }
+
+        function draw(room, override) {
+          var target = override !== null && override !== undefined
+            ? override
+            : room.targetTemperature;
+
+          var stack = element('div', 'stack');
+
+          var top = element('div', 'top');
+          var left = element('div', 'left');
+          left.append(element('div', 'big', degrees(room.measureTemperature, 1) + '°'));
+          if (room.measureHumidity !== null) {
+            left.append(element('div', 'homey-text-small-light',
+              Homey.__('widgets.roomTile.humidity', { percent: Math.round(room.measureHumidity) })));
+          }
+
+          var pill = element('div', 'pill' + (room.isHeating ? ' heating' : ''));
+          pill.append(
+            element('span', 'dot'),
+            element('span', 'homey-text-small', room.isHeating
+              ? Homey.__('widgets.roomTile.heating', { percent: Math.round(room.heatingPower) })
+              : Homey.__('widgets.roomTile.idle'))
+          );
+          top.append(left, pill);
+          stack.append(top);
+
+          var row = element('div', 'setpoint');
+          var minus = element('button', 'step');
+          minus.type = 'button';
+          minus.append(icon('M4 10h12'));
+          var plus = element('button', 'step');
+          plus.type = 'button';
+          plus.append(icon('M10 4v12M4 10h12'));
+
+          if (target === null) {
+            minus.disabled = true;
+            plus.disabled = true;
+          } else {
+            minus.disabled = target <= room.minTemperature;
+            plus.disabled = target >= room.maxTemperature;
+            minus.addEventListener('click', function () {
+              write(room, Math.max(room.minTemperature, target - room.temperatureStep));
+            });
+            plus.addEventListener('click', function () {
+              write(room, Math.min(room.maxTemperature, target + room.temperatureStep));
+            });
+          }
+
+          var value = element('div', 'value');
+          value.append(
+            element('div', 'degrees', degrees(target, 1) + ' °C'),
+            element('div', 'homey-text-small-light', Homey.__('widgets.roomTile.target'))
+          );
+          row.append(minus, value, plus);
+          stack.append(row);
+
+          var presets = element('div', 'presets');
+          PRESETS.forEach(function (preset) {
+            var button = element('button', 'preset' + (room.presetMode === preset ? ' on' : ''),
+              Homey.__('widgets.roomTile.preset.' + preset));
+            button.type = 'button';
+            button.addEventListener('click', function () { choosePreset(room, preset); });
+            presets.append(button);
+          });
+          stack.append(presets);
+
+          root.replaceChildren(stack);
+        }
+
+        function render(state) {
+          if (!state.hasKey) {
+            message(Homey.__('widgets.common.noKey'));
+          } else {
+            var room = chosenRoom(state);
+            if (room === null) {
+              message(settings.room
+                ? Homey.__('widgets.common.roomGone')
+                : Homey.__('widgets.common.pickRoom'));
+            } else {
+              var override = Date.now() < pendingUntil ? pending : null;
+              if (override === null) pending = null;
+              draw(room, override);
+            }
+          }
+
+          var height = measure();
+          Homey.setHeight(height);
+          return height;
+        }
+
+        Homey.on('state', render);
+
+        Homey.api('GET', '/', {})
+          .then(function (state) {
+            Homey.ready({ height: render(state) });
+          })
+          .catch(function (err) {
+            console.error(err);
+            Homey.ready({ height: message(Homey.__('widgets.common.failed')) });
+          });
+      }
+    </script>
+  </body>
+</html>

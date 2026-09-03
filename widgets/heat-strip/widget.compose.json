@@ -1,0 +1,24 @@
+{
+  "name": { "en": "Heating", "da": "Varme" },
+  "settings": [
+    {
+      "id": "sort",
+      "type": "dropdown",
+      "title": { "en": "Order", "da": "Rækkefølge" },
+      "value": "power",
+      "values": [
+        { "id": "power", "title": { "en": "Hardest working first", "da": "Mest aktive først" } },
+        { "id": "name", "title": { "en": "By name", "da": "Efter navn" } }
+      ]
+    },
+    {
+      "id": "only_heating",
+      "type": "checkbox",
+      "title": { "en": "Only rooms calling for heat", "da": "Kun rum der kalder på varme" },
+      "value": false
+    }
+  ],
+  "api": {
+    "getState": { "method": "GET", "path": "/" }
+  }
+}

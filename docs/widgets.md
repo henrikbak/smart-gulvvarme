@@ -1,8 +1,10 @@
 # Dashboard widgets: what is possible
 
-An exploration of Homey dashboard widgets for this app — what the platform offers, what
-this app already has that is worth putting on a dashboard, and what it would cost to
-build. Nothing here is implemented yet.
+What Homey dashboard widgets offer, what this app has worth putting on one, and what it
+cost to build. All five concepts below are implemented under `widgets/`.
+
+Three things in the original exploration turned out to be wrong once the code existed.
+They are corrected in place, and called out under [What building it changed](#what-building-it-changed).
 
 ## What a widget is
 
@@ -51,21 +53,21 @@ against the Smart Gulvvarme API — which is the only acceptable answer given th
 floor and the rate limiting the poller already backs off from.
 
 **Settings.** Per-widget settings support `text`, `textarea`, `number`, `dropdown`,
-`checkbox` and `autocomplete`, plus a dedicated top-level `devices` picker:
+`checkbox` and `autocomplete`, plus a dedicated top-level `devices` picker that hands the
+frontend Homey device ids through `Homey.getDeviceIds()`.
 
-```json
-"devices": {
-  "type": "app",
-  "singular": false,
-  "filter": { "class": "thermostat" }
-}
-```
+**The `devices` picker is not usable here**, which is the one finding that reshaped the
+build. Those ids are Homey's own device UUIDs, and the Apps SDK documents no way to get
+from a UUID back to a `Device` instance inside the app: `Device` has `getData()`,
+`getName()` and the rest, but no `getId()`. An app could reach Homey's device manager
+over the Web API instead, but only by taking the `homey:manager:api` permission — and
+`permissions` is empty today, which is worth keeping.
 
-`type: "app"` limits the picker to this app's own devices. `type: "global"` would let a
-user pick any device on the Homey, but it only works if the app holds the
-`homey:manager:api` permission — and `permissions` is empty today, which is worth keeping
-that way. Every concept below works with `"app"`. Users can multi-select and reorder by
-drag, and the widget reads the result with `Homey.getDeviceIds()`.
+So the widgets that need to name one room use an `autocomplete` setting instead, filled by
+`registerSettingAutocompleteListener` in `app.ts`. An autocomplete result may carry any
+extra properties, so it carries this app's own `buildingId` and `roomId` — identifiers the
+app can resolve, because the devices were paired with them. The widgets that show every
+room need no setting at all. Nothing depends on an undocumented API.
 
 **Styling.** Homey ships a token set: `--homey-su-*` for spacing, `--homey-font-size-*`
 and `--homey-line-height-*` for type, `--homey-text-color-*` / `--homey-color-*` for
@@ -215,3 +217,31 @@ button (3) folds naturally into the room tile rather than standing on its own.
 - [Widget settings](https://apps.developer.homey.app/the-basics/widgets/settings)
 - [Widget styling](https://apps.developer.homey.app/the-basics/widgets/styling)
 - [Web API](https://apps.developer.homey.app/advanced/web-api)
+
+## What building it changed
+
+Three claims above were wrong when first written, and each one cost real work:
+
+1. **The `devices` picker looked like the obvious way to choose rooms.** It is not usable
+   without a permission this app does not want, because a Homey device id cannot be
+   resolved back to a `Device`. Autocomplete settings carrying this app's own ids replace
+   it, and are arguably a better fit: the widgets that show every room now need no
+   configuration at all.
+
+2. **The poller-subscription problem does not exist.** Devices always subscribe, and a
+   widget can only reference a paired device, so the poller is always running when a
+   widget has anything to show.
+
+3. **Widget heights must be measured, not calculated.** Every page first worked out its
+   own height by counting rows and multiplying — and four of the five were wrong, by up to
+   40 px, which clips silently because an artboard neither scales nor crops. They now
+   measure the rendered DOM and pass that to `Homey.setHeight()`. For the same reason none
+   of them declares a `height` in `widget.compose.json`: the SDK advises against setting
+   both, and content that depends on how many rooms are paired can only be right at
+   runtime.
+
+One smaller thing worth knowing: the widget frame sits at `--homey-color-mono-000` in
+light mode but `--homey-color-mono-050` in dark, so there is no single mono index one step
+above it in both. `--homey-color-mono-100` is the index that reads correctly either way -
+a clear control on white, a lighter surface on the dark frame - and is what the buttons
+and pills use.

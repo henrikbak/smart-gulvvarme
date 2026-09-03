@@ -1,0 +1,17 @@
+{
+  "name": { "en": "Outdoors", "da": "Udenfor" },
+  "settings": [
+    {
+      "id": "building",
+      "type": "autocomplete",
+      "title": { "en": "Building", "da": "Bygning" },
+      "hint": {
+        "en": "Leave empty to use the only building you have.",
+        "da": "Lad stå tom for at bruge din eneste bygning."
+      }
+    }
+  ],
+  "api": {
+    "getState": { "method": "GET", "path": "/" }
+  }
+}
