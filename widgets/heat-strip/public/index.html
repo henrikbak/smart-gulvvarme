@@ -46,6 +46,14 @@
 
     <script type="text/javascript">
       function onHomeyReady(Homey) {
+        function __(key, tags) {
+          var text = Homey.__(key);
+          if (typeof text !== 'string' || !tags) return text;
+          return text.replace(/{{\s*([\w.]+)\s*}}/g, function (match, name) {
+            return tags[name] === undefined ? match : String(tags[name]);
+          });
+        }
+
         var settings = Homey.getSettings();
         var root = document.getElementById('root');
 
@@ -126,13 +134,13 @@
 
         function render(state) {
           if (!state.hasKey) {
-            message(Homey.__('widgets.common.noKey'));
+            message(__('widgets.common.noKey'));
           } else if (state.rooms.length === 0) {
-            message(Homey.__('widgets.common.noRooms'));
+            message(__('widgets.common.noRooms'));
           } else {
             var rooms = visibleRooms(state);
             if (rooms.length === 0) {
-              message(Homey.__('widgets.heatStrip.idle'));
+              message(__('widgets.heatStrip.idle'));
             } else {
               root.className = 'rows';
               root.replaceChildren.apply(root, rooms.map(rowFor));
@@ -153,7 +161,7 @@
           })
           .catch(function (err) {
             console.error(err);
-            Homey.ready({ height: message(Homey.__('widgets.common.failed')) });
+            Homey.ready({ height: message(__('widgets.common.failed')) });
           });
       }
     </script>

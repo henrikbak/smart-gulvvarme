@@ -39,6 +39,14 @@
 
     <script type="text/javascript">
       function onHomeyReady(Homey) {
+        function __(key, tags) {
+          var text = Homey.__(key);
+          if (typeof text !== 'string' || !tags) return text;
+          return text.replace(/{{\s*([\w.]+)\s*}}/g, function (match, name) {
+            return tags[name] === undefined ? match : String(tags[name]);
+          });
+        }
+
         var settings = Homey.getSettings();
         var root = document.getElementById('root');
 
@@ -99,7 +107,7 @@
           })
             .catch(function (err) {
               console.error(err);
-              button.querySelector('.label').textContent = Homey.__('widgets.boost.failed');
+              button.querySelector('.label').textContent = __('widgets.boost.failed');
             })
             .then(function () {
               window.setTimeout(function () { button.disabled = false; }, 2000);
@@ -111,8 +119,8 @@
           button.type = 'button';
           button.append(
             flame(),
-            element('span', 'label', Homey.__('widgets.boost.label')),
-            element('span', 'summary', Homey.__('widgets.boost.summary', {
+            element('span', 'label', __('widgets.boost.label')),
+            element('span', 'summary', __('widgets.boost.summary', {
               temperature: temperature,
               minutes: minutes,
             }))
@@ -125,13 +133,13 @@
 
         function render(state) {
           if (!state.hasKey) {
-            message(Homey.__('widgets.common.noKey'));
+            message(__('widgets.common.noKey'));
           } else {
             var room = chosenRoom(state);
             if (room === null) {
               message(settings.room
-                ? Homey.__('widgets.common.roomGone')
-                : Homey.__('widgets.common.pickRoom'));
+                ? __('widgets.common.roomGone')
+                : __('widgets.common.pickRoom'));
             } else {
               draw(room);
             }
@@ -150,7 +158,7 @@
           })
           .catch(function (err) {
             console.error(err);
-            Homey.ready({ height: message(Homey.__('widgets.common.failed')) });
+            Homey.ready({ height: message(__('widgets.common.failed')) });
           });
       }
     </script>

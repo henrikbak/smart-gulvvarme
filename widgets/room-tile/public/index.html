@@ -82,6 +82,14 @@
 
     <script type="text/javascript">
       function onHomeyReady(Homey) {
+        function __(key, tags) {
+          var text = Homey.__(key);
+          if (typeof text !== 'string' || !tags) return text;
+          return text.replace(/{{\s*([\w.]+)\s*}}/g, function (match, name) {
+            return tags[name] === undefined ? match : String(tags[name]);
+          });
+        }
+
         var settings = Homey.getSettings();
         var root = document.getElementById('root');
 
@@ -171,15 +179,15 @@
           left.append(element('div', 'big', degrees(room.measureTemperature, 1) + '°'));
           if (room.measureHumidity !== null) {
             left.append(element('div', 'homey-text-small-light',
-              Homey.__('widgets.roomTile.humidity', { percent: Math.round(room.measureHumidity) })));
+              __('widgets.roomTile.humidity', { percent: Math.round(room.measureHumidity) })));
           }
 
           var pill = element('div', 'pill' + (room.isHeating ? ' heating' : ''));
           pill.append(
             element('span', 'dot'),
             element('span', 'homey-text-small', room.isHeating
-              ? Homey.__('widgets.roomTile.heating', { percent: Math.round(room.heatingPower) })
-              : Homey.__('widgets.roomTile.idle'))
+              ? __('widgets.roomTile.heating', { percent: Math.round(room.heatingPower) })
+              : __('widgets.roomTile.idle'))
           );
           top.append(left, pill);
           stack.append(top);
@@ -209,7 +217,7 @@
           var value = element('div', 'value');
           value.append(
             element('div', 'degrees', degrees(target, 1) + ' °C'),
-            element('div', 'homey-text-small-light', Homey.__('widgets.roomTile.target'))
+            element('div', 'homey-text-small-light', __('widgets.roomTile.target'))
           );
           row.append(minus, value, plus);
           stack.append(row);
@@ -217,7 +225,7 @@
           var presets = element('div', 'presets');
           PRESETS.forEach(function (preset) {
             var button = element('button', 'preset' + (room.presetMode === preset ? ' on' : ''),
-              Homey.__('widgets.roomTile.preset.' + preset));
+              __('widgets.roomTile.preset.' + preset));
             button.type = 'button';
             button.addEventListener('click', function () { choosePreset(room, preset); });
             presets.append(button);
@@ -229,13 +237,13 @@
 
         function render(state) {
           if (!state.hasKey) {
-            message(Homey.__('widgets.common.noKey'));
+            message(__('widgets.common.noKey'));
           } else {
             var room = chosenRoom(state);
             if (room === null) {
               message(settings.room
-                ? Homey.__('widgets.common.roomGone')
-                : Homey.__('widgets.common.pickRoom'));
+                ? __('widgets.common.roomGone')
+                : __('widgets.common.pickRoom'));
             } else {
               var override = Date.now() < pendingUntil ? pending : null;
               if (override === null) pending = null;
@@ -256,7 +264,7 @@
           })
           .catch(function (err) {
             console.error(err);
-            Homey.ready({ height: message(Homey.__('widgets.common.failed')) });
+            Homey.ready({ height: message(__('widgets.common.failed')) });
           });
       }
     </script>

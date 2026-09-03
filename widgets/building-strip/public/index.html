@@ -56,6 +56,14 @@
 
     <script type="text/javascript">
       function onHomeyReady(Homey) {
+        function __(key, tags) {
+          var text = Homey.__(key);
+          if (typeof text !== 'string' || !tags) return text;
+          return text.replace(/{{\s*([\w.]+)\s*}}/g, function (match, name) {
+            return tags[name] === undefined ? match : String(tags[name]);
+          });
+        }
+
         var settings = Homey.getSettings();
         var root = document.getElementById('root');
 
@@ -87,7 +95,7 @@
 
         function compass(angle) {
           if (angle === null) return '';
-          var points = Homey.__('widgets.building.compass').split(',');
+          var points = __('widgets.building.compass').split(',');
           return points[Math.round((angle % 360) / 22.5) % 16];
         }
 
@@ -120,7 +128,7 @@
           var left = element('div', 'left');
           left.append(
             element('div', 'big', number(building.outdoorTemperature, 1, '°')),
-            element('div', 'homey-text-small-light', Homey.__('widgets.building.outdoor'))
+            element('div', 'homey-text-small-light', __('widgets.building.outdoor'))
           );
 
           var wind = element('div', 'wind');
@@ -148,7 +156,7 @@
             fill.style.width = Math.max(0, Math.min(100, building.cloudCoverage)) + '%';
             track.append(fill);
             clouds.append(
-              element('span', 'label homey-text-small-light', Homey.__('widgets.building.clouds')),
+              element('span', 'label homey-text-small-light', __('widgets.building.clouds')),
               track,
               element('span', 'homey-text-small', Math.round(building.cloudCoverage) + ' %')
             );
@@ -158,14 +166,14 @@
           var gateway = element('div', 'gateway' + (building.online ? '' : ' down'));
           gateway.append(
             element('span', 'dot'),
-            element('span', 'homey-text-small', Homey.__(building.online
+            element('span', 'homey-text-small', __(building.online
               ? 'widgets.building.online'
               : 'widgets.building.offline'))
           );
           var seen = clockTime(building.lastSeen);
           if (seen !== null) {
             gateway.append(element('span', 'spacer homey-text-small-light',
-              Homey.__('widgets.building.lastSeen', { time: seen })));
+              __('widgets.building.lastSeen', { time: seen })));
           }
           stack.append(gateway);
 
@@ -174,11 +182,11 @@
 
         function render(state) {
           if (!state.hasKey) {
-            message(Homey.__('widgets.common.noKey'));
+            message(__('widgets.common.noKey'));
           } else {
             var building = chosenBuilding(state);
             if (building === null) {
-              message(Homey.__('widgets.common.pickBuilding'));
+              message(__('widgets.common.pickBuilding'));
             } else {
               draw(building);
             }
@@ -197,7 +205,7 @@
           })
           .catch(function (err) {
             console.error(err);
-            Homey.ready({ height: message(Homey.__('widgets.common.failed')) });
+            Homey.ready({ height: message(__('widgets.common.failed')) });
           });
       }
     </script>

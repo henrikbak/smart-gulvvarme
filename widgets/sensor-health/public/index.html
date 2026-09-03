@@ -35,6 +35,14 @@
 
     <script type="text/javascript">
       function onHomeyReady(Homey) {
+        function __(key, tags) {
+          var text = Homey.__(key);
+          if (typeof text !== 'string' || !tags) return text;
+          return text.replace(/{{\s*([\w.]+)\s*}}/g, function (match, name) {
+            return tags[name] === undefined ? match : String(tags[name]);
+          });
+        }
+
         var settings = Homey.getSettings();
         var root = document.getElementById('root');
 
@@ -90,9 +98,9 @@
         function header() {
           var row = element('div', 'row');
           row.append(
-            element('span', 'homey-text-small-light', Homey.__('widgets.sensors.room')),
-            element('span', 'figure homey-text-small-light', Homey.__('widgets.sensors.humidity')),
-            element('span', 'figure homey-text-small-light', Homey.__('widgets.sensors.battery')),
+            element('span', 'homey-text-small-light', __('widgets.sensors.room')),
+            element('span', 'figure homey-text-small-light', __('widgets.sensors.humidity')),
+            element('span', 'figure homey-text-small-light', __('widgets.sensors.battery')),
             element('span')
           );
           return row;
@@ -129,7 +137,7 @@
             + ' stroke-linejoin="round"><path d="M8 2.5l6 11H2z"/><path d="M8 7v3M8 12h.01"/></svg>';
           note.append(
             svg,
-            element('span', 'homey-text-small-light', Homey.__('widgets.sensors.stale', {
+            element('span', 'homey-text-small-light', __('widgets.sensors.stale', {
               names: offline.map(function (room) { return room.name; }).join(', '),
             }))
           );
@@ -143,9 +151,9 @@
 
         function render(state) {
           if (!state.hasKey) {
-            message(Homey.__('widgets.common.noKey'));
+            message(__('widgets.common.noKey'));
           } else if (state.rooms.length === 0) {
-            message(Homey.__('widgets.common.noRooms'));
+            message(__('widgets.common.noRooms'));
           } else {
             var rooms = state.rooms.slice().sort(function (a, b) {
               return a.name.localeCompare(b.name);
@@ -153,7 +161,7 @@
             if (settings.only_problems === true) rooms = rooms.filter(needsAttention);
 
             if (rooms.length === 0) {
-              message(Homey.__('widgets.sensors.allWell'));
+              message(__('widgets.sensors.allWell'));
             } else {
               var children = [header()].concat(rooms.map(rowFor));
               var note = warning(rooms);
@@ -176,7 +184,7 @@
           })
           .catch(function (err) {
             console.error(err);
-            Homey.ready({ height: message(Homey.__('widgets.common.failed')) });
+            Homey.ready({ height: message(__('widgets.common.failed')) });
           });
       }
     </script>
