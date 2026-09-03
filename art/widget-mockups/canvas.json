@@ -1,0 +1,72 @@
+{
+  "artboards": [
+    {
+      "file": "Main.dc.html",
+      "x": 0,
+      "y": 0,
+      "w": 800,
+      "h": 456
+    },
+    {
+      "file": "RoomTile.dc.html",
+      "x": 900,
+      "y": 0,
+      "w": 800,
+      "h": 348
+    },
+    {
+      "file": "BuildingStrip.dc.html",
+      "x": 1800,
+      "y": 0,
+      "w": 800,
+      "h": 309
+    },
+    {
+      "file": "SensorHealth.dc.html",
+      "x": 0,
+      "y": 596,
+      "w": 800,
+      "h": 393
+    },
+    {
+      "file": "BoostButton.dc.html",
+      "x": 900,
+      "y": 596,
+      "w": 800,
+      "h": 288
+    },
+    {
+      "file": "Dashboard.dc.html",
+      "x": 1800,
+      "y": 596,
+      "w": 800,
+      "h": 893
+    }
+  ],
+  "annotations": [
+    {
+      "id": "note-lead",
+      "x": 0,
+      "y": -170,
+      "w": 800,
+      "text": "Heat strip - the lead concept. heating_power and is_heating are custom capabilities of this app, so no built-in Homey widget can draw them. Readings are sample data; room names come from the Smart Gulvvarme account, which is why they are Danish."
+    },
+    {
+      "id": "note-tokens",
+      "x": 900,
+      "y": -170,
+      "w": 800,
+      "text": "Colours, type ramp and spacing are Homey's published widget tokens at their exact values. The orange is Homey's own --homey-color-orange (#ff8400); the accent chip above each artboard swaps it for the app's brand orange (#f36b21) or any other."
+    },
+    {
+      "id": "note-dashboard",
+      "x": 1800,
+      "y": 536,
+      "w": 800,
+      "text": "How three of them sit together in one dashboard column."
+    }
+  ],
+  "launch": {
+    "view": "canvas"
+  }
+}
