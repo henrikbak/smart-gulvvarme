@@ -31,6 +31,14 @@ export interface PollerEvents {
   roomGone: (ids: { buildingId: string; roomId: string }) => void;
   outage: (reason: OutageReason, message: string) => void;
   recovered: () => void;
+  /**
+   * One poll finished, successfully or not.
+   *
+   * Devices have already applied their new values by the time this fires, so a
+   * listener that reads device state - the widget bridge does - sees the tick's
+   * result rather than the previous one.
+   */
+  tick: () => void;
 }
 
 /**
@@ -166,6 +174,9 @@ export class Poller extends EventEmitter {
       this.onFailure(err);
     } finally {
       this.ticking = false;
+      // Fires even on a failed tick: an outage changes what a widget should
+      // show just as much as new readings do.
+      this.emit('tick');
       this.schedule(this.intervalMs + this.backoffMs);
     }
   }

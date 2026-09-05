@@ -47,5 +47,50 @@
       "invalid_key": "API-nøglen blev ikke godkendt.",
       "unreachable": "Kunne ikke få fat i Smart Gulvvarme."
     }
+  },
+  "widgets": {
+    "common": {
+      "noKey": "Der er ikke konfigureret en API-nøgle.",
+      "noRooms": "Der er ikke tilføjet nogen rum endnu.",
+      "pickRoom": "Vælg et rum i widgetens indstillinger.",
+      "pickBuilding": "Vælg en bygning i widgetens indstillinger.",
+      "roomGone": "Det rum er ikke tilføjet længere.",
+      "failed": "Kunne ikke få fat i appen."
+    },
+    "heatStrip": {
+      "idle": "Ingen rum kalder på varme."
+    },
+    "roomTile": {
+      "humidity": "Luftfugtighed {{percent}} %",
+      "heating": "Varmer {{percent}} %",
+      "idle": "Varmer ikke",
+      "target": "Måltemperatur",
+      "preset": {
+        "none": "Fra",
+        "low": "Lav",
+        "medium": "Mellem",
+        "high": "Høj"
+      }
+    },
+    "building": {
+      "outdoor": "Udetemperatur",
+      "clouds": "Skydække",
+      "online": "Gateway online",
+      "offline": "Gateway offline",
+      "compass": "N,NNØ,NØ,ØNØ,Ø,ØSØ,SØ,SSØ,S,SSV,SV,VSV,V,VNV,NV,NNV",
+      "lastSeen": "Sidst set {{time}}"
+    },
+    "sensors": {
+      "room": "Rum",
+      "humidity": "Fugt",
+      "battery": "Batteri",
+      "stale": "Rapporterer ikke: {{names}}",
+      "allWell": "Alle sensorer rapporterer."
+    },
+    "boost": {
+      "label": "Boost",
+      "summary": "{{temperature}} °C i {{minutes}} min",
+      "failed": "Kunne ikke starte"
+    }
   }
 }

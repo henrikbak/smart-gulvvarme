@@ -1,0 +1,23 @@
+{
+  "name": { "en": "Sensors", "da": "Sensorer" },
+  "settings": [
+    {
+      "id": "only_problems",
+      "type": "checkbox",
+      "title": { "en": "Only rooms needing attention", "da": "Kun rum der kræver opmærksomhed" },
+      "value": false
+    },
+    {
+      "id": "low_battery",
+      "type": "number",
+      "title": { "en": "Low battery below", "da": "Lavt batteri under" },
+      "hint": { "en": "Percent.", "da": "Procent." },
+      "value": 20,
+      "min": 0,
+      "max": 100
+    }
+  ],
+  "api": {
+    "getState": { "method": "GET", "path": "/" }
+  }
+}

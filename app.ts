@@ -7,6 +7,16 @@ import { InvalidKeyError, MissingKeyError } from './lib/errors';
 import { buildingDisplayName } from './lib/mapper';
 import { DEFAULT_INTERVAL_S, MIN_INTERVAL_S, Poller } from './lib/poller';
 import type { PresetMode } from './lib/types';
+import { WIDGET_STATE_EVENT, type WidgetState } from './lib/widget-api';
+import {
+  type BuildingView,
+  type DeviceLike,
+  type RoomIds,
+  type RoomView,
+  buildingViews,
+  findRoomDevice,
+  roomViews,
+} from './lib/widget-data';
 
 /** The parts of the room device the Flow cards reach into. */
 interface RoomDeviceLike {
@@ -60,6 +70,7 @@ module.exports = class SmartGulvvarmeApp extends Homey.App {
     });
 
     this.registerFlowCards();
+    this.registerWidgets();
 
     this.log('Smart Gulvvarme has been initialized');
   }
@@ -112,6 +123,92 @@ module.exports = class SmartGulvvarmeApp extends Homey.App {
     flow.getActionCard('refresh').registerRunListener(async () => {
       await this.poller.refresh();
     });
+  }
+
+  // -- Widgets ---------------------------------------------------------------
+
+  /**
+   * Wire the dashboard widgets up to the poller.
+   *
+   * Widgets never call the Smart Gulvvarme API. The devices already carry the
+   * newest values, so one realtime event per poll keeps every open widget in
+   * step at no extra cost against the upstream rate limit.
+   */
+  private registerWidgets(): void {
+    this.poller.on('tick', () => {
+      this.homey.api.realtime(WIDGET_STATE_EVENT, this.getWidgetState());
+    });
+
+    // A room the widget can name is a room that is still paired, so the stored
+    // selection is checked against the devices rather than against the API.
+    for (const widgetId of ['room-tile', 'boost']) {
+      this.homey.dashboards
+        .getWidget(widgetId)
+        .registerSettingAutocompleteListener('room', async (query: string) => this.roomChoices(query));
+    }
+
+    this.homey.dashboards
+      .getWidget('building-strip')
+      .registerSettingAutocompleteListener('building', async (query: string) => this.buildingChoices(query));
+  }
+
+  private roomChoices(query: string): Array<RoomIds & { name: string; description: string }> {
+    const buildings = this.getBuildingViews();
+    const nameOf = (buildingId: string): string => buildings.find(
+      (building) => building.buildingId === buildingId,
+    )?.name ?? '';
+
+    return this.getRoomViews()
+      .filter((room) => room.name.toLowerCase().includes(query.toLowerCase()))
+      .map((room) => ({
+        name: room.name,
+        description: nameOf(room.buildingId),
+        buildingId: room.buildingId,
+        roomId: room.roomId,
+      }));
+  }
+
+  private buildingChoices(query: string): Array<{ name: string; buildingId: string }> {
+    return this.getBuildingViews()
+      .filter((building) => building.name.toLowerCase().includes(query.toLowerCase()))
+      .map((building) => ({ name: building.name, buildingId: building.buildingId }));
+  }
+
+  /** Everything the widgets render, read straight off the paired devices. */
+  getWidgetState(): WidgetState {
+    return {
+      hasKey: this.hasApiKey(),
+      rooms: this.getRoomViews(),
+      buildings: this.getBuildingViews(),
+    };
+  }
+
+  getRoomViews(): RoomView[] {
+    return roomViews(this.roomDevices());
+  }
+
+  getBuildingViews(): BuildingView[] {
+    return buildingViews(this.buildingDevices());
+  }
+
+  /**
+   * The device behind a room, for a widget that writes.
+   *
+   * Widgets go through the device for the same reason the Flow cards do: the
+   * debounce and the optimistic window that stop the setpoint bouncing live
+   * there, and a second write path would lose both.
+   */
+  getRoomDevice(ids: RoomIds): RoomDeviceLike | null {
+    const device = findRoomDevice(this.roomDevices(), ids);
+    return device === null ? null : (device as unknown as RoomDeviceLike);
+  }
+
+  private roomDevices(): DeviceLike[] {
+    return this.homey.drivers.getDriver('room').getDevices();
+  }
+
+  private buildingDevices(): DeviceLike[] {
+    return this.homey.drivers.getDriver('building').getDevices();
   }
 
   /** The shared poller. Devices subscribe in onInit and unsubscribe in onUninit. */

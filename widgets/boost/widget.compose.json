@@ -1,0 +1,32 @@
+{
+  "name": { "en": "Boost", "da": "Boost" },
+  "settings": [
+    {
+      "id": "room",
+      "type": "autocomplete",
+      "title": { "en": "Room", "da": "Rum" }
+    },
+    {
+      "id": "temperature",
+      "type": "number",
+      "title": { "en": "Temperature", "da": "Temperatur" },
+      "hint": { "en": "Degrees Celsius.", "da": "Grader celsius." },
+      "value": 24,
+      "min": 7,
+      "max": 35
+    },
+    {
+      "id": "minutes",
+      "type": "number",
+      "title": { "en": "Duration", "da": "Varighed" },
+      "hint": { "en": "Minutes.", "da": "Minutter." },
+      "value": 30,
+      "min": 1,
+      "max": 1440
+    }
+  ],
+  "api": {
+    "getState": { "method": "GET", "path": "/" },
+    "boost": { "method": "POST", "path": "/" }
+  }
+}

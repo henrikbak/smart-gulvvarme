@@ -1,0 +1,15 @@
+{
+  "name": { "en": "Room", "da": "Rum" },
+  "settings": [
+    {
+      "id": "room",
+      "type": "autocomplete",
+      "title": { "en": "Room", "da": "Rum" }
+    }
+  ],
+  "api": {
+    "getState": { "method": "GET", "path": "/" },
+    "setTarget": { "method": "POST", "path": "/target" },
+    "setPreset": { "method": "POST", "path": "/preset" }
+  }
+}

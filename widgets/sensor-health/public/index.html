@@ -1,0 +1,192 @@
+<html>
+  <head>
+    <style>
+      body { color: var(--homey-text-color); }
+
+      .rows { display: flex; flex-direction: column; gap: var(--homey-su-3); }
+
+      .row {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 68px 68px 20px;
+        gap: var(--homey-su-2);
+        align-items: center;
+      }
+
+      .name, .figure { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .figure { text-align: right; }
+      .low { color: var(--homey-text-color-red); font-weight: var(--homey-font-weight-medium); }
+      .stale { color: var(--homey-text-color-light); }
+
+      .note {
+        display: flex;
+        align-items: flex-start;
+        gap: var(--homey-su-2);
+        padding-top: var(--homey-su-3);
+        border-top: 1px solid var(--homey-line-color);
+      }
+      .note svg { flex: 0 0 auto; margin-top: 2px; }
+
+      .message { display: flex; align-items: center; min-height: 36px; }
+    </style>
+  </head>
+
+  <body class="homey-widget">
+    <div id="root" class="rows"></div>
+
+    <script type="text/javascript">
+      function onHomeyReady(Homey) {
+        function __(key, tags) {
+          var text = Homey.__(key);
+          if (typeof text !== 'string' || !tags) return text;
+          return text.replace(/{{\s*([\w.]+)\s*}}/g, function (match, name) {
+            return tags[name] === undefined ? match : String(tags[name]);
+          });
+        }
+
+        var settings = Homey.getSettings();
+        var root = document.getElementById('root');
+
+        // Ask for exactly what was drawn. Counting rows by hand drifts the
+        // moment the styling changes, and a frame shorter than its content
+        // clips silently.
+        function measure() {
+          var style = window.getComputedStyle(document.body);
+          return Math.ceil(root.getBoundingClientRect().height
+            + parseFloat(style.paddingTop) + parseFloat(style.paddingBottom));
+        }
+
+        var lowBattery = typeof settings.low_battery === 'number' ? settings.low_battery : 20;
+
+        function element(tag, className, text) {
+          var el = document.createElement(tag);
+          if (className) el.className = className;
+          if (text !== undefined) el.textContent = text;
+          return el;
+        }
+
+        function percent(value) {
+          return value === null ? '—' : Math.round(value) + ' %';
+        }
+
+        function needsAttention(room) {
+          return room.sensorOffline
+            || !room.available
+            || (room.batteryPercent !== null && room.batteryPercent < lowBattery);
+        }
+
+        function bars(room) {
+          var strong = room.sensorOffline || !room.available
+            ? 'var(--homey-color-mono-200)'
+            : 'var(--homey-color-green)';
+          var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+          svg.setAttribute('width', '16');
+          svg.setAttribute('height', '16');
+          svg.setAttribute('viewBox', '0 0 16 16');
+          [[2, 10, 4], [6.5, 7, 7], [11, 4, 10]].forEach(function (spec) {
+            var rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+            rect.setAttribute('x', spec[0]);
+            rect.setAttribute('y', spec[1]);
+            rect.setAttribute('width', '3');
+            rect.setAttribute('height', spec[2]);
+            rect.setAttribute('rx', '1');
+            rect.setAttribute('fill', strong);
+            svg.append(rect);
+          });
+          return svg;
+        }
+
+        function header() {
+          var row = element('div', 'row');
+          row.append(
+            element('span', 'homey-text-small-light', __('widgets.sensors.room')),
+            element('span', 'figure homey-text-small-light', __('widgets.sensors.humidity')),
+            element('span', 'figure homey-text-small-light', __('widgets.sensors.battery')),
+            element('span')
+          );
+          return row;
+        }
+
+        function rowFor(room) {
+          var offline = room.sensorOffline || !room.available;
+          var row = element('div', 'row');
+
+          var battery = element('span', 'figure homey-text-small', percent(room.batteryPercent));
+          if (offline) {
+            battery.className = 'figure homey-text-small stale';
+          } else if (room.batteryPercent !== null && room.batteryPercent < lowBattery) {
+            battery.className = 'figure homey-text-small low';
+          }
+
+          row.append(
+            element('span', 'name homey-text-regular' + (offline ? ' stale' : ''), room.name),
+            element('span', 'figure homey-text-small', offline ? '—' : percent(room.measureHumidity)),
+            battery,
+            bars(room)
+          );
+          return row;
+        }
+
+        function warning(rooms) {
+          var offline = rooms.filter(function (room) { return room.sensorOffline || !room.available; });
+          if (offline.length === 0) return null;
+
+          var note = element('div', 'note');
+          var svg = document.createElement('span');
+          svg.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none"'
+            + ' stroke="var(--homey-color-red)" stroke-width="1.6" stroke-linecap="round"'
+            + ' stroke-linejoin="round"><path d="M8 2.5l6 11H2z"/><path d="M8 7v3M8 12h.01"/></svg>';
+          note.append(
+            svg,
+            element('span', 'homey-text-small-light', __('widgets.sensors.stale', {
+              names: offline.map(function (room) { return room.name; }).join(', '),
+            }))
+          );
+          return note;
+        }
+
+        function message(text) {
+          root.replaceChildren();
+          root.append(element('div', 'message homey-text-small-light', text));
+        }
+
+        function render(state) {
+          if (!state.hasKey) {
+            message(__('widgets.common.noKey'));
+          } else if (state.rooms.length === 0) {
+            message(__('widgets.common.noRooms'));
+          } else {
+            var rooms = state.rooms.slice().sort(function (a, b) {
+              return a.name.localeCompare(b.name);
+            });
+            if (settings.only_problems === true) rooms = rooms.filter(needsAttention);
+
+            if (rooms.length === 0) {
+              message(__('widgets.sensors.allWell'));
+            } else {
+              var children = [header()].concat(rooms.map(rowFor));
+              var note = warning(rooms);
+              if (note !== null) children.push(note);
+
+              root.replaceChildren.apply(root, children);
+            }
+          }
+
+          var height = measure();
+          Homey.setHeight(height);
+          return height;
+        }
+
+        Homey.on('state', render);
+
+        Homey.api('GET', '/', {})
+          .then(function (state) {
+            Homey.ready({ height: render(state) });
+          })
+          .catch(function (err) {
+            console.error(err);
+            Homey.ready({ height: message(__('widgets.common.failed')) });
+          });
+      }
+    </script>
+  </body>
+</html>
