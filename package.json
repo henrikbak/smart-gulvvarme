@@ -1,6 +1,6 @@
 {
   "name": "dk.smartgulvvarme",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "private": true,
   "license": "MIT",
   "author": "Henrik Lund Thomassen <hej@henriklund.dk>",
@@ -9,6 +9,7 @@
     "build": "tsc",
     "gen:types": "openapi-typescript docs/openapi.json -o lib/api-schema.ts",
     "lint": "eslint .",
+    "release": "node scripts/release.mjs",
     "test": "npm run build && node --test \".homeybuild/test/**/*.test.js\"",
     "validate": "homey app validate --level publish",
     "version:check": "node scripts/check-version.mjs"
