@@ -4,7 +4,8 @@
     ".homeybuild/",
     "node_modules/",
     "lib/api-schema.ts",
-    "app.json"
+    "app.json",
+    "scripts/"
   ],
   "settings": {
     "import/resolver": {
