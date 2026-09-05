@@ -1,0 +1,311 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    /* Homey widget design tokens - exact values from the Apps SDK styling guide. */
+    :root {
+      --homey-su-1: 4px;  --homey-su-2: 8px;  --homey-su-3: 12px; --homey-su-4: 16px;
+      --homey-su-5: 20px; --homey-su-6: 24px; --homey-su-7: 28px; --homey-su-8: 32px;
+
+      --homey-font-size-xxlarge: 32px; --homey-line-height-xxlarge: 40px;
+      --homey-font-size-xlarge:  24px; --homey-line-height-xlarge:  32px;
+      --homey-font-size-large:   20px; --homey-line-height-large:   28px;
+      --homey-font-size-default: 17px; --homey-line-height-default: 24px;
+      --homey-font-size-small:   14px; --homey-line-height-small:   20px;
+
+      --homey-font-weight-bold: 700; --homey-font-weight-medium: 500; --homey-font-weight-regular: 400;
+
+      --homey-icon-size-medium: 20px; --homey-icon-size-regular: 16px; --homey-icon-size-small: 14px;
+
+      --homey-border-radius-default: 12px; --homey-border-radius-small: 6px;
+
+      /* Identical in both modes, per the styling guide. */
+      --homey-color-blue:   #0082fa;
+      --homey-color-green:  #3fc700;
+      --homey-color-orange: #ff8400;
+      --homey-color-red:    #d81c1d;
+      --homey-color-white:  #ffffff;
+    }
+
+    /* The mono ramp inverts between modes, so one token index works in both. */
+    .mode-light {
+      --homey-color-mono-000:#ffffff; --homey-color-mono-010:#fbfbfd; --homey-color-mono-025:#f4f4fa;
+      --homey-color-mono-050:#eaeaf1; --homey-color-mono-100:#dadae2; --homey-color-mono-200:#c8c8d0;
+      --homey-color-mono-300:#b1b1b9; --homey-color-mono-400:#93939a; --homey-color-mono-500:#7a7a7f;
+      --homey-color-mono-600:#626265; --homey-color-mono-700:#49494b; --homey-color-mono-800:#303031;
+      --homey-color-mono-900:#1c1c1c; --homey-color-mono-1000:#000000;
+      --homey-background-color: var(--homey-color-mono-000);
+      --dash-ground: #f4f4fa;
+      --surface-raised: var(--homey-color-mono-050);
+      --frame-shadow: 0 2px 8px rgba(0,0,0,.08);
+    }
+    .mode-dark {
+      --homey-color-mono-000:#000000; --homey-color-mono-010:#09090c; --homey-color-mono-025:#111218;
+      --homey-color-mono-050:#1f2029; --homey-color-mono-100:#2b2c36; --homey-color-mono-200:#3b3d4a;
+      --homey-color-mono-300:#4f515f; --homey-color-mono-400:#666875; --homey-color-mono-500:#80818e;
+      --homey-color-mono-600:#999aa3; --homey-color-mono-700:#b2b3b8; --homey-color-mono-800:#cacace;
+      --homey-color-mono-900:#e4e4e7; --homey-color-mono-1000:#ffffff;
+      --homey-background-color: var(--homey-color-mono-050);
+      --dash-ground: #09090c;
+      --surface-raised: var(--homey-color-mono-100);
+      --frame-shadow: 0 2px 10px rgba(0,0,0,.55);
+    }
+    .mode-light, .mode-dark {
+      --homey-text-color:        var(--homey-color-mono-900);
+      --homey-text-color-light:  var(--homey-color-mono-500);
+      --homey-text-color-white:  var(--homey-color-white);
+      --homey-text-color-blue:   var(--homey-color-blue);
+      --homey-text-color-green:  var(--homey-color-green);
+      --homey-text-color-orange: var(--homey-color-orange);
+      --homey-text-color-red:    var(--homey-color-red);
+      --homey-color-highlight:   var(--homey-color-blue);
+      --homey-color-success:     var(--homey-color-green);
+      --homey-color-warning:     var(--homey-color-orange);
+      --homey-color-danger:      var(--homey-color-red);
+      --homey-line-color:        var(--homey-color-mono-100);
+      --homey-line-color-light:  var(--homey-color-mono-050);
+      --homey-icon-color-dark:   var(--homey-color-mono-900);
+      --homey-icon-color-light:  var(--homey-color-mono-500);
+    }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, "Helvetica Neue", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: var(--homey-color-blue); }
+    a:hover { color: #0068c8; }
+
+    .stage { display: flex; align-items: flex-start; }
+    .pane {
+      flex: 1 1 0;
+      align-self: stretch;
+      background: var(--dash-ground);
+      padding: var(--homey-su-8);
+      display: flex;
+      flex-direction: column;
+      gap: var(--homey-su-3);
+    }
+    .pane-label {
+      font-size: 11px; line-height: 16px; font-weight: 600;
+      letter-spacing: .09em; text-transform: uppercase;
+      color: var(--homey-text-color-light);
+    }
+    /* The dashboard draws this title above the frame; users can rename or hide it. */
+    .widget-title {
+      font-size: var(--homey-font-size-large);
+      line-height: var(--homey-line-height-large);
+      font-weight: var(--homey-font-weight-bold);
+      color: var(--homey-text-color);
+      padding: 0 var(--homey-su-1);
+    }
+    .frame {
+      background: var(--homey-background-color);
+      border-radius: var(--homey-border-radius-default);
+      box-shadow: var(--frame-shadow);
+      overflow: hidden;
+    }
+    .homey-widget { padding: var(--homey-su-4); }
+    .homey-widget-small { padding: var(--homey-su-2); }
+    .homey-widget-full { padding: 0; }
+
+    .homey-text-bold {
+      font-size: var(--homey-font-size-default); line-height: var(--homey-line-height-default);
+      font-weight: var(--homey-font-weight-bold); color: var(--homey-text-color);
+    }
+    .homey-text-medium {
+      font-size: var(--homey-font-size-default); line-height: var(--homey-line-height-default);
+      font-weight: var(--homey-font-weight-medium); color: var(--homey-text-color);
+    }
+    .homey-text-regular {
+      font-size: var(--homey-font-size-default); line-height: var(--homey-line-height-default);
+      font-weight: var(--homey-font-weight-regular); color: var(--homey-text-color);
+    }
+    .homey-text-small {
+      font-size: var(--homey-font-size-small); line-height: var(--homey-line-height-small);
+      font-weight: var(--homey-font-weight-regular); color: var(--homey-text-color);
+    }
+    .homey-text-small-light {
+      font-size: var(--homey-font-size-small); line-height: var(--homey-line-height-small);
+      font-weight: var(--homey-font-weight-regular); color: var(--homey-text-color-light);
+    }
+
+    .stage { align-items: stretch; min-height: 100vh; }
+  </style>
+</helmet>
+<div class="stage">
+  <div class="mode-light pane">
+    <div class="pane-label">Lys</div>
+    <div class="widget-title">Varme</div>
+      <div class="frame">
+        <div class="homey-widget" style="display: flex; flex-direction: column; gap: var(--homey-su-2);">
+
+          <div style="display: flex; align-items: center; gap: var(--homey-su-3); padding: var(--homey-su-1) 0;">
+            <span style="width: 8px; height: 8px; border-radius: 50%; flex: 0 0 auto; background: {{accent}};"></span>
+            <div style="flex: 1 1 auto; display: flex; flex-direction: column; gap: 6px;">
+              <div class="homey-text-medium">Stue</div>
+              <div style="height: 4px; border-radius: 2px; background: var(--homey-line-color); overflow: hidden;">
+                <div style="width: 68%; height: 100%; border-radius: 2px; background: {{accent}};"></div>
+              </div>
+            </div>
+            <div style="flex: 0 0 auto; text-align: right;">
+              <div class="homey-text-medium">21,4°</div>
+              <div class="homey-text-small-light">&#8594; 22,0°</div>
+            </div>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: var(--homey-su-3); padding: var(--homey-su-1) 0;">
+            <span style="width: 8px; height: 8px; border-radius: 50%; flex: 0 0 auto; background: {{accent}};"></span>
+            <div style="flex: 1 1 auto; display: flex; flex-direction: column; gap: 6px;">
+              <div class="homey-text-medium">Badev&#230;relse</div>
+              <div style="height: 4px; border-radius: 2px; background: var(--homey-line-color); overflow: hidden;">
+                <div style="width: 45%; height: 100%; border-radius: 2px; background: {{accent}};"></div>
+              </div>
+            </div>
+            <div style="flex: 0 0 auto; text-align: right;">
+              <div class="homey-text-medium">23,8°</div>
+              <div class="homey-text-small-light">&#8594; 24,0°</div>
+            </div>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: var(--homey-su-3); padding: var(--homey-su-1) 0;">
+            <span style="width: 8px; height: 8px; border-radius: 50%; flex: 0 0 auto; background: {{accent}};"></span>
+            <div style="flex: 1 1 auto; display: flex; flex-direction: column; gap: 6px;">
+              <div class="homey-text-medium">Sovev&#230;relse</div>
+              <div style="height: 4px; border-radius: 2px; background: var(--homey-line-color); overflow: hidden;">
+                <div style="width: 12%; height: 100%; border-radius: 2px; background: {{accent}};"></div>
+              </div>
+            </div>
+            <div style="flex: 0 0 auto; text-align: right;">
+              <div class="homey-text-medium">18,9°</div>
+              <div class="homey-text-small-light">&#8594; 19,0°</div>
+            </div>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: var(--homey-su-3); padding: var(--homey-su-1) 0;">
+            <span style="width: 8px; height: 8px; border-radius: 50%; flex: 0 0 auto; background: var(--homey-color-mono-200);"></span>
+            <div style="flex: 1 1 auto; display: flex; flex-direction: column; gap: 6px;">
+              <div class="homey-text-medium">K&#248;kken</div>
+              <div style="height: 4px; border-radius: 2px; background: var(--homey-line-color); overflow: hidden;">
+                <div style="width: 0%; height: 100%; border-radius: 2px; background: {{accent}};"></div>
+              </div>
+            </div>
+            <div style="flex: 0 0 auto; text-align: right;">
+              <div class="homey-text-medium">22,1°</div>
+              <div class="homey-text-small-light">&#8594; 22,0°</div>
+            </div>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: var(--homey-su-3); padding: var(--homey-su-1) 0;">
+            <span style="width: 8px; height: 8px; border-radius: 50%; flex: 0 0 auto; background: var(--homey-color-mono-200);"></span>
+            <div style="flex: 1 1 auto; display: flex; flex-direction: column; gap: 6px;">
+              <div class="homey-text-medium">Kontor</div>
+              <div style="height: 4px; border-radius: 2px; background: var(--homey-line-color); overflow: hidden;">
+                <div style="width: 0%; height: 100%; border-radius: 2px; background: {{accent}};"></div>
+              </div>
+            </div>
+            <div style="flex: 0 0 auto; text-align: right;">
+              <div class="homey-text-medium">20,2°</div>
+              <div class="homey-text-small-light">&#8594; 21,0°</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+  </div>
+  <div class="mode-dark pane">
+    <div class="pane-label">M&#248;rk</div>
+    <div class="widget-title">Varme</div>
+      <div class="frame">
+        <div class="homey-widget" style="display: flex; flex-direction: column; gap: var(--homey-su-2);">
+
+          <div style="display: flex; align-items: center; gap: var(--homey-su-3); padding: var(--homey-su-1) 0;">
+            <span style="width: 8px; height: 8px; border-radius: 50%; flex: 0 0 auto; background: {{accent}};"></span>
+            <div style="flex: 1 1 auto; display: flex; flex-direction: column; gap: 6px;">
+              <div class="homey-text-medium">Stue</div>
+              <div style="height: 4px; border-radius: 2px; background: var(--homey-line-color); overflow: hidden;">
+                <div style="width: 68%; height: 100%; border-radius: 2px; background: {{accent}};"></div>
+              </div>
+            </div>
+            <div style="flex: 0 0 auto; text-align: right;">
+              <div class="homey-text-medium">21,4°</div>
+              <div class="homey-text-small-light">&#8594; 22,0°</div>
+            </div>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: var(--homey-su-3); padding: var(--homey-su-1) 0;">
+            <span style="width: 8px; height: 8px; border-radius: 50%; flex: 0 0 auto; background: {{accent}};"></span>
+            <div style="flex: 1 1 auto; display: flex; flex-direction: column; gap: 6px;">
+              <div class="homey-text-medium">Badev&#230;relse</div>
+              <div style="height: 4px; border-radius: 2px; background: var(--homey-line-color); overflow: hidden;">
+                <div style="width: 45%; height: 100%; border-radius: 2px; background: {{accent}};"></div>
+              </div>
+            </div>
+            <div style="flex: 0 0 auto; text-align: right;">
+              <div class="homey-text-medium">23,8°</div>
+              <div class="homey-text-small-light">&#8594; 24,0°</div>
+            </div>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: var(--homey-su-3); padding: var(--homey-su-1) 0;">
+            <span style="width: 8px; height: 8px; border-radius: 50%; flex: 0 0 auto; background: {{accent}};"></span>
+            <div style="flex: 1 1 auto; display: flex; flex-direction: column; gap: 6px;">
+              <div class="homey-text-medium">Sovev&#230;relse</div>
+              <div style="height: 4px; border-radius: 2px; background: var(--homey-line-color); overflow: hidden;">
+                <div style="width: 12%; height: 100%; border-radius: 2px; background: {{accent}};"></div>
+              </div>
+            </div>
+            <div style="flex: 0 0 auto; text-align: right;">
+              <div class="homey-text-medium">18,9°</div>
+              <div class="homey-text-small-light">&#8594; 19,0°</div>
+            </div>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: var(--homey-su-3); padding: var(--homey-su-1) 0;">
+            <span style="width: 8px; height: 8px; border-radius: 50%; flex: 0 0 auto; background: var(--homey-color-mono-200);"></span>
+            <div style="flex: 1 1 auto; display: flex; flex-direction: column; gap: 6px;">
+              <div class="homey-text-medium">K&#248;kken</div>
+              <div style="height: 4px; border-radius: 2px; background: var(--homey-line-color); overflow: hidden;">
+                <div style="width: 0%; height: 100%; border-radius: 2px; background: {{accent}};"></div>
+              </div>
+            </div>
+            <div style="flex: 0 0 auto; text-align: right;">
+              <div class="homey-text-medium">22,1°</div>
+              <div class="homey-text-small-light">&#8594; 22,0°</div>
+            </div>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: var(--homey-su-3); padding: var(--homey-su-1) 0;">
+            <span style="width: 8px; height: 8px; border-radius: 50%; flex: 0 0 auto; background: var(--homey-color-mono-200);"></span>
+            <div style="flex: 1 1 auto; display: flex; flex-direction: column; gap: 6px;">
+              <div class="homey-text-medium">Kontor</div>
+              <div style="height: 4px; border-radius: 2px; background: var(--homey-line-color); overflow: hidden;">
+                <div style="width: 0%; height: 100%; border-radius: 2px; background: {{accent}};"></div>
+              </div>
+            </div>
+            <div style="flex: 0 0 auto; text-align: right;">
+              <div class="homey-text-medium">20,2°</div>
+              <div class="homey-text-small-light">&#8594; 21,0°</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+  </div>
+</div>
+</x-dc>
+<script data-dc-script data-props='{"accent": {"editor": "color", "default": "#ff8400", "options": ["#ff8400", "#f36b21", "#d81c1d", "#0082fa"], "section": "Theme"}, "$preview": {"width": 800, "height": 456}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { accent: this.props.accent ?? '#ff8400' };
+  }
+}
+</script>
+</body>
+</html>

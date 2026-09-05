@@ -1,0 +1,169 @@
+<html>
+  <head>
+    <style>
+      body { color: var(--homey-text-color); }
+
+      .rows { display: flex; flex-direction: column; gap: var(--homey-su-2); }
+
+      .row {
+        display: flex;
+        align-items: center;
+        gap: var(--homey-su-3);
+        min-height: 36px;
+      }
+
+      .dot {
+        flex: 0 0 auto;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--homey-color-mono-200);
+      }
+      .row.heating .dot { background: var(--homey-color-orange); }
+
+      .middle { flex: 1 1 auto; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+
+      .name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+      .track {
+        height: 4px;
+        border-radius: 2px;
+        background: var(--homey-line-color);
+        overflow: hidden;
+      }
+      .fill { height: 100%; border-radius: 2px; background: var(--homey-color-orange); }
+
+      .readout { flex: 0 0 auto; text-align: right; }
+
+      .unavailable { opacity: .45; }
+
+      .message { display: flex; align-items: center; min-height: 36px; }
+    </style>
+  </head>
+
+  <body class="homey-widget">
+    <div id="root" class="rows"></div>
+
+    <script type="text/javascript">
+      function onHomeyReady(Homey) {
+        function __(key, tags) {
+          var text = Homey.__(key);
+          if (typeof text !== 'string' || !tags) return text;
+          return text.replace(/{{\s*([\w.]+)\s*}}/g, function (match, name) {
+            return tags[name] === undefined ? match : String(tags[name]);
+          });
+        }
+
+        var settings = Homey.getSettings();
+        var root = document.getElementById('root');
+
+        // Ask for exactly what was drawn. Counting rows by hand drifts the
+        // moment the styling changes, and a frame shorter than its content
+        // clips silently.
+        function measure() {
+          var style = window.getComputedStyle(document.body);
+          return Math.ceil(root.getBoundingClientRect().height
+            + parseFloat(style.paddingTop) + parseFloat(style.paddingBottom));
+        }
+
+        function degrees(value) {
+          return value === null ? '–' : value.toFixed(1).replace('.', ',') + '°';
+        }
+
+        function message(text) {
+          root.className = '';
+          root.replaceChildren();
+          var p = document.createElement('div');
+          p.className = 'message homey-text-small-light';
+          p.textContent = text;
+
+        }
+
+        function visibleRooms(state) {
+          var rooms = state.rooms.slice();
+
+          if (settings.only_heating === true) {
+            rooms = rooms.filter(function (room) { return room.isHeating; });
+          }
+
+          rooms.sort(function (a, b) {
+            var byName = a.name.localeCompare(b.name);
+            return settings.sort === 'name' ? byName : (b.heatingPower - a.heatingPower) || byName;
+          });
+
+          return rooms;
+        }
+
+        function rowFor(room) {
+          var row = document.createElement('div');
+          row.className = 'row' + (room.isHeating ? ' heating' : '') + (room.available ? '' : ' unavailable');
+
+          var dot = document.createElement('span');
+          dot.className = 'dot';
+
+          var middle = document.createElement('div');
+          middle.className = 'middle';
+
+          var name = document.createElement('div');
+          name.className = 'name homey-text-medium';
+          // textContent, never innerHTML: room names come from the account.
+          name.textContent = room.name;
+
+          var track = document.createElement('div');
+          track.className = 'track';
+          var fill = document.createElement('div');
+          fill.className = 'fill';
+          fill.style.width = Math.max(0, Math.min(100, room.heatingPower)) + '%';
+          track.append(fill);
+
+          middle.append(name, track);
+
+          var readout = document.createElement('div');
+          readout.className = 'readout';
+          var now = document.createElement('div');
+          now.className = 'homey-text-medium';
+          now.textContent = degrees(room.measureTemperature);
+          var target = document.createElement('div');
+          target.className = 'homey-text-small-light';
+          target.textContent = '→ ' + degrees(room.targetTemperature);
+          readout.append(now, target);
+
+          row.append(dot, middle, readout);
+          return row;
+        }
+
+        function render(state) {
+          if (!state.hasKey) {
+            message(__('widgets.common.noKey'));
+          } else if (state.rooms.length === 0) {
+            message(__('widgets.common.noRooms'));
+          } else {
+            var rooms = visibleRooms(state);
+            if (rooms.length === 0) {
+              message(__('widgets.heatStrip.idle'));
+            } else {
+              root.className = 'rows';
+              root.replaceChildren.apply(root, rooms.map(rowFor));
+            }
+          }
+
+          var height = measure();
+          Homey.setHeight(height);
+          return height;
+        }
+
+        // The app re-sends this after every poll, so the widget never asks twice.
+        Homey.on('state', render);
+
+        Homey.api('GET', '/', {})
+          .then(function (state) {
+            Homey.ready({ height: render(state) });
+          })
+          .catch(function (err) {
+            console.error(err);
+            Homey.ready({ height: message(__('widgets.common.failed')) });
+          });
+      }
+    </script>
+  </body>
+</html>

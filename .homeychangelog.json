@@ -5,5 +5,9 @@
   },
   "1.0.1": {
     "en": "Room devices now show a single battery level instead of two. New artwork for the app and both devices, with icons drawn from the actual hardware."
+  },
+  "1.1.0": {
+    "en": "Five dashboard widgets: a heat strip showing which rooms are calling for heat, a room tile with setpoint and comfort level, outdoor conditions and gateway status, a sensor overview, and a one-tap boost button.",
+    "da": "Fem dashboard-widgets: en varmeoversigt der viser hvilke rum der kalder på varme, et rumfelt med måltemperatur og komfortniveau, udendørsforhold og gateway-status, et sensoroverblik, og en boost-knap med ét tryk."
   }
 }
