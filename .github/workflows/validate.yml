@@ -28,6 +28,11 @@ jobs:
       - name: Test
         run: node --test ".homeybuild/test/**/*.test.js"
 
+      # Drift here only shows up at release time otherwise, when the tag is
+      # already pushed and the release notes are already wrong.
+      - name: Check the version is consistent
+        run: node scripts/check-version.mjs
+
       # Catches missing translations, wrong image sizes and unknown capabilities.
       - name: Validate Homey app
         uses: athombv/github-action-homey-app-validate@master
