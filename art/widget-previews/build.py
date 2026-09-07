@@ -87,7 +87,7 @@ def signal(x, y, fill):
 
 
 def heat_strip(t):
-    """Five rooms: a dot, a name, a progress track, a reading."""
+    """Five rooms: a dot, a name, a track with its percentage, a reading."""
     rows = [(250, 0.72), (330, 0.62), (300, 0.22), (215, 0.0), (235, 0.0)]
     height = PAD * 2 + len(rows) * 104 - 24
     out = []
@@ -97,10 +97,13 @@ def heat_strip(t):
         out.append(circle(INNER_X + 11, y + 15, 11, ACCENT if hot else t['track']))
         out.append(bar(INNER_X + 40, y, name_w, 30, t['bar']))
         out.append(right_bar(120, y, 30, t['strong']))
-        track_w = INNER_W - 40 - 150
+        track_w = INNER_W - 40 - 150 - 90
         out.append(bar(INNER_X + 40, y + 48, track_w, 16, t['track']))
         if hot:
             out.append(bar(INNER_X + 40, y + 48, track_w * fill, 16, ACCENT))
+        # The percentage the widget prints at the end of the track.
+        out.append(bar(INNER_X + 40 + track_w + 16, y + 48, 74, 16,
+                       t['bar'] if hot else t['track']))
         out.append(right_bar(90, y + 48, 16, t['track']))
         y += 104
     return height, out

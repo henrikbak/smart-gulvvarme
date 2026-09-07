@@ -102,7 +102,8 @@ The built-in device widget shows one device at a time and knows nothing about
 ### 1. Heat strip — the strongest candidate
 
 One compact row per room: name, measured temperature, setpoint, a horizontal bar for
-`heating_power`, and an orange dot while `is_heating`. Rooms come from a multi-select
+`heating_power` with the percentage printed beside it, and an orange dot while
+`is_heating`. Rooms come from a multi-select
 `devices` picker so the user chooses which ones and in what order.
 
 This is the widget that shows something no other surface can: which rooms are actually
