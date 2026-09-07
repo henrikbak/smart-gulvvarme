@@ -33,6 +33,10 @@ widgets/heat-strip/
   preview-dark.png
 ```
 
+The two previews are drawn, not captured: store guideline 1.10 forbids a screenshot of
+the widget and forbids text, so `art/widget-previews/build.py` redraws each widget as
+flat shapes at 1024x1024 on a transparent background.
+
 `homey app widget create` scaffolds this. The CLI folds every `widget.compose.json` into
 `app.json` under a `widgets` key during compose, the same way it already folds
 `.homeycompose/capabilities` and `.homeycompose/flow` — so the composed manifest stays
