@@ -25,13 +25,19 @@
 
       .name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
+      .bar { display: flex; align-items: center; gap: var(--homey-su-2); }
+
       .track {
+        flex: 1 1 auto;
         height: 4px;
         border-radius: 2px;
         background: var(--homey-line-color);
         overflow: hidden;
       }
       .fill { height: 100%; border-radius: 2px; background: var(--homey-color-orange); }
+
+      /* Fixed width so the percentages line up down the strip. */
+      .power { flex: 0 0 auto; min-width: 38px; text-align: right; }
 
       .readout { flex: 0 0 auto; text-align: right; }
 
@@ -66,6 +72,10 @@
             + parseFloat(style.paddingTop) + parseFloat(style.paddingBottom));
         }
 
+        function percent(value) {
+          return Math.round(Math.max(0, Math.min(100, value))) + ' %';
+        }
+
         function degrees(value) {
           return value === null ? '–' : value.toFixed(1).replace('.', ',') + '°';
         }
@@ -76,7 +86,7 @@
           var p = document.createElement('div');
           p.className = 'message homey-text-small-light';
           p.textContent = text;
-
+          root.append(p);
         }
 
         function visibleRooms(state) {
@@ -116,7 +126,16 @@
           fill.style.width = Math.max(0, Math.min(100, room.heatingPower)) + '%';
           track.append(fill);
 
-          middle.append(name, track);
+          // How hard the room is working, next to the bar that draws it.
+          var power = document.createElement('div');
+          power.className = 'power homey-text-small-light';
+          power.textContent = percent(room.heatingPower);
+
+          var bar = document.createElement('div');
+          bar.className = 'bar';
+          bar.append(track, power);
+
+          middle.append(name, bar);
 
           var readout = document.createElement('div');
           readout.className = 'readout';
