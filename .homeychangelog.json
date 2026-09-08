@@ -9,5 +9,8 @@
   "1.1.0": {
     "en": "Five dashboard widgets: a heat strip showing which rooms are calling for heat, a room tile with setpoint and comfort level, outdoor conditions and gateway status, a sensor overview, and a one-tap boost button.",
     "da": "Fem dashboard-widgets: en varmeoversigt der viser hvilke rum der kalder på varme, et rumfelt med måltemperatur og komfortniveau, udendørsforhold og gateway-status, et sensoroverblik, og en boost-knap med ét tryk."
+  },
+  "1.1.1": {
+    "en": "Redraw the widget previews as textless shapes"
   }
 }
