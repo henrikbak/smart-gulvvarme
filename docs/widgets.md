@@ -33,6 +33,10 @@ widgets/heat-strip/
   preview-dark.png
 ```
 
+The two previews are drawn, not captured: store guideline 1.10 forbids a screenshot of
+the widget and forbids text, so `art/widget-previews/build.py` redraws each widget as
+flat shapes at 1024x1024 on a transparent background.
+
 `homey app widget create` scaffolds this. The CLI folds every `widget.compose.json` into
 `app.json` under a `widgets` key during compose, the same way it already folds
 `.homeycompose/capabilities` and `.homeycompose/flow` — so the composed manifest stays
@@ -98,7 +102,8 @@ The built-in device widget shows one device at a time and knows nothing about
 ### 1. Heat strip — the strongest candidate
 
 One compact row per room: name, measured temperature, setpoint, a horizontal bar for
-`heating_power`, and an orange dot while `is_heating`. Rooms come from a multi-select
+`heating_power` with the percentage printed beside it, and an orange dot while
+`is_heating`. Rooms come from a multi-select
 `devices` picker so the user chooses which ones and in what order.
 
 This is the widget that shows something no other surface can: which rooms are actually
